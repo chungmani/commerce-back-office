@@ -22,9 +22,6 @@ public class AdminController {
     // 회원가입
     @PostMapping("/signup")
     public ResponseEntity<CreateAdminResponse> create(@RequestBody CreateAdminRequest request) {
-        if (request.equals(AdminRole.SUPER_ADMIN)) {
-            throw new IllegalStateException("슈퍼관리자로 가입할 수 없습니다.");
-        }
         return ResponseEntity.status(HttpStatus.CREATED).body(adminService.create(request));
     }
 

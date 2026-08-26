@@ -2,10 +2,7 @@ package com.example.commercebackoffice.domain.admin.dto;
 
 import com.example.commercebackoffice.domain.admin.enums.AdminRole;
 import jakarta.persistence.Column;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 
 public record CreateAdminRequest (
 
@@ -27,7 +24,7 @@ public record CreateAdminRequest (
         message = "올바른 휴대폰 번호 형식이 아닙니다. (예: 010-0000-0000)")
         String phoneNumber,
 
-        @NotBlank(message = "관리자 역할을 입력해주세요.")
+        @NotNull(message = "관리자 역할을 입력해주세요.")
         AdminRole role
 ){
 }
