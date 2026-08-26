@@ -2,8 +2,8 @@ package com.example.commercebackoffice.domain.admin.controller;
 
 import com.example.commercebackoffice.domain.admin.dto.CreateAdminRequest;
 import com.example.commercebackoffice.domain.admin.dto.CreateAdminResponse;
-import com.example.commercebackoffice.domain.admin.enums.AdminRole;
 import com.example.commercebackoffice.domain.admin.service.AdminService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +21,7 @@ public class AdminController {
 
     // 회원가입
     @PostMapping("/signup")
-    public ResponseEntity<CreateAdminResponse> create(@RequestBody CreateAdminRequest request) {
+    public ResponseEntity<CreateAdminResponse> create(@Valid @RequestBody CreateAdminRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(adminService.create(request));
     }
 

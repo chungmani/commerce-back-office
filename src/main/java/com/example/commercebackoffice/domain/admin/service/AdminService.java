@@ -1,6 +1,6 @@
 package com.example.commercebackoffice.domain.admin.service;
 
-import com.example.commercebackoffice.common.sequrity.PasswordEncoder;
+import com.example.commercebackoffice.common.security.PasswordEncoder;
 import com.example.commercebackoffice.domain.admin.dto.CreateAdminRequest;
 import com.example.commercebackoffice.domain.admin.dto.CreateAdminResponse;
 import com.example.commercebackoffice.domain.admin.entity.Admin;

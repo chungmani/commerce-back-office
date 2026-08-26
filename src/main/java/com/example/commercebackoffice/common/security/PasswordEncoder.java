@@ -1,4 +1,4 @@
-package com.example.commercebackoffice.common.sequrity;
+package com.example.commercebackoffice.common.security;
 
 import at.favre.lib.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Component;
