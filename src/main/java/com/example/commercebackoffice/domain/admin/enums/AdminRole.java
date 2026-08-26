@@ -7,5 +7,5 @@ public enum AdminRole {
     SUPER_ADMIN,
     OPERATION_ADMIN,
     MARKETING_ADMIN,
-    CUSTOMER_SUPPORT_ADMIN
+    CS_ADMIN
 }
