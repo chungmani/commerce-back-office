@@ -1,7 +1,7 @@
-package com.example.commercebackoffice.admin.entity;
+package com.example.commercebackoffice.domain.admin.entity;
 
-import com.example.commercebackoffice.admin.enums.AdminRole;
-import com.example.commercebackoffice.admin.enums.AdminState;
+import com.example.commercebackoffice.domain.admin.enums.AdminRole;
+import com.example.commercebackoffice.domain.admin.enums.AdminState;
 import com.example.commercebackoffice.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;

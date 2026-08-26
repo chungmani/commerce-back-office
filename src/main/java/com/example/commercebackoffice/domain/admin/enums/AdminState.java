@@ -1,4 +1,4 @@
-package com.example.commercebackoffice.admin.enums;
+package com.example.commercebackoffice.domain.admin.enums;
 
 import lombok.Getter;
 
