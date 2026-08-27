@@ -54,8 +54,17 @@ public class AdminService {
             throw new IllegalStateException("이메일 또는 비밀번호가 일치하지 않습니다.");
         }
 
-        if (!admin.getState().equals(AdminState.ACTIVE)) {
-            throw new IllegalStateException("로그인이 불가합니다.");
+        if (admin.getState().equals(AdminState.PENDING)) {
+            throw new IllegalStateException("승인대기 중인 계정입니다.");
+        }
+        if (admin.getState().equals(AdminState.INACTIVE)) {
+            throw new IllegalStateException("비활성화된 계정입니다.");
+        }
+        if (admin.getState().equals(AdminState.SUSPENDED)) {
+            throw new IllegalStateException("정지된 계정입니다.");
+        }
+        if (admin.getState().equals(AdminState.DENIED)) {
+            throw new IllegalStateException("거부된 계정입니다.");
         }
 
         return admin;
