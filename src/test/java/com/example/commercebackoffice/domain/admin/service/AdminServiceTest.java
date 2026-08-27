@@ -62,7 +62,7 @@ class AdminServiceTest {
         when(passwordEncoder.encode(request.password()))
                 .thenReturn("passwordHashed");
 
-        Admin admin = new Admin(request.name(), request.email(), "passwordHashed",
+        admin = new Admin(request.name(), request.email(), "passwordHashed",
                 request.phoneNumber(), request.role());
 
         ReflectionTestUtils.setField(admin, "id", 1L);
@@ -147,5 +147,57 @@ class AdminServiceTest {
         // when & then
         IllegalStateException e = assertThrows(IllegalStateException.class, () -> adminService.login(loginRequest));
         assertEquals("이메일 또는 비밀번호가 일치하지 않습니다.", e.getMessage());
+    }
+
+    @Test
+    @DisplayName("비활성화 계정의 로그인 - 로그인 실패")
+    void inactiveLogin() {
+        // given
+        admin.changeState(AdminState.INACTIVE);
+        when(adminRepository.findByEmail(loginRequest.email())).thenReturn(Optional.of(admin));
+        when(passwordEncoder.matches(loginRequest.password(), admin.getPassword())).thenReturn(true);
+
+        // when & then
+        IllegalStateException e = assertThrows(IllegalStateException.class, () -> adminService.login(loginRequest));
+        assertEquals("비활성화된 계정입니다.", e.getMessage());
+    }
+
+    @Test
+    @DisplayName("승인대기 계정의 로그인 - 로그인 실패")
+    void pendingLogin() {
+        // given
+        admin.changeState(AdminState.PENDING);
+        when(adminRepository.findByEmail(loginRequest.email())).thenReturn(Optional.of(admin));
+        when(passwordEncoder.matches(loginRequest.password(), admin.getPassword())).thenReturn(true);
+
+        // when & then
+        IllegalStateException e = assertThrows(IllegalStateException.class, () -> adminService.login(loginRequest));
+        assertEquals("승인대기 중인 계정입니다.", e.getMessage());
+    }
+
+    @Test
+    @DisplayName("정지된 계정의 로그인 - 로그인 실패")
+    void suspendedLogin() {
+        // given
+        admin.changeState(AdminState.SUSPENDED);
+        when(adminRepository.findByEmail(loginRequest.email())).thenReturn(Optional.of(admin));
+        when(passwordEncoder.matches(loginRequest.password(), admin.getPassword())).thenReturn(true);
+
+        // when & then
+        IllegalStateException e = assertThrows(IllegalStateException.class, () -> adminService.login(loginRequest));
+        assertEquals("정지된 계정입니다.", e.getMessage());
+    }
+
+    @Test
+    @DisplayName("거부된 계정의 로그인 - 로그인 실패")
+    void deniedLogin() {
+        // given
+        admin.changeState(AdminState.DENIED);
+        when(adminRepository.findByEmail(loginRequest.email())).thenReturn(Optional.of(admin));
+        when(passwordEncoder.matches(loginRequest.password(), admin.getPassword())).thenReturn(true);
+
+        // when & then
+        IllegalStateException e = assertThrows(IllegalStateException.class, () -> adminService.login(loginRequest));
+        assertEquals("거부된 계정입니다.", e.getMessage());
     }
 }
