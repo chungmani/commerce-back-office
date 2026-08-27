@@ -1,7 +1,6 @@
 package com.example.commercebackoffice.domain.admin.dto;
 
 import com.example.commercebackoffice.domain.admin.enums.AdminRole;
-import jakarta.persistence.Column;
 import jakarta.validation.constraints.*;
 
 public record CreateAdminRequest (
