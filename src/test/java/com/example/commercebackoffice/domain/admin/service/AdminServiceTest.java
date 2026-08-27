@@ -3,8 +3,10 @@ package com.example.commercebackoffice.domain.admin.service;
 import com.example.commercebackoffice.common.security.PasswordEncoder;
 import com.example.commercebackoffice.domain.admin.dto.CreateAdminRequest;
 import com.example.commercebackoffice.domain.admin.dto.CreateAdminResponse;
+import com.example.commercebackoffice.domain.admin.dto.LoginRequest;
 import com.example.commercebackoffice.domain.admin.entity.Admin;
 import com.example.commercebackoffice.domain.admin.enums.AdminRole;
+import com.example.commercebackoffice.domain.admin.enums.AdminState;
 import com.example.commercebackoffice.domain.admin.repository.AdminRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,6 +16,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
+
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -98,4 +102,25 @@ class AdminServiceTest {
         IllegalStateException e = assertThrows(IllegalStateException.class, () -> adminService.create(request));
         assertEquals("슈퍼관리자로 가입할 수 없습니다.", e.getMessage());
     }
+
+    @Test
+    @DisplayName("로그인 성공 케이스")
+    void login() {
+        // given
+        Admin admin = new Admin("채원", "test@test.com",
+                "Rlacodnjs12#", "010-0000-0000", AdminRole.CS_ADMIN);
+        admin.changeState(AdminState.ACTIVE);
+        LoginRequest request = new LoginRequest("test@test.com", "Rlacodnjs12#");
+        when(adminRepository.findByEmail(request.email())).thenReturn(Optional.of(admin));
+        when(passwordEncoder.matches(request.password(), admin.getPassword())).thenReturn(true);
+
+        // when
+        Admin result = adminService.login(request);
+
+        // then
+        assertEquals(admin, result);
+    }
+
+    // 이메일 , 비밀번호 틀릴때
+    // 계정 상태에 따른 예외발생
 }
