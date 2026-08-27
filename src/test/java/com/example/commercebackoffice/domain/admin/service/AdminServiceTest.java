@@ -81,8 +81,21 @@ class AdminServiceTest {
 
         // when & then
        IllegalStateException exception = assertThrows(IllegalStateException.class, () -> adminService.create(request));
-       assertEquals("이미 가입한 이메일입니다.", exception.getLocalizedMessage() );
+       assertEquals("이미 가입한 이메일입니다.", exception.getMessage() );
 
     }
 
+    @Test
+    @DisplayName("슈퍼관리자로 회원가입시 회원가입 실패")
+    void signupWithSuperAdmin() {
+        // given
+        CreateAdminRequest request = new CreateAdminRequest(
+                "채원", "test@test.com", "Dlcodnjs12#",
+                "010-0000-0000", AdminRole.SUPER_ADMIN
+        );
+
+        // when & then
+        IllegalStateException e = assertThrows(IllegalStateException.class, () -> adminService.create(request));
+        assertEquals("슈퍼관리자로 가입할 수 없습니다.", e.getMessage());
+    }
 }
