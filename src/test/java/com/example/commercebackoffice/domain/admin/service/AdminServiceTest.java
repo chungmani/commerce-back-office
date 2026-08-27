@@ -67,6 +67,22 @@ class AdminServiceTest {
         assertEquals("passwordHashed", adminCaptor.getValue().getPassword());
     }
 
+    @Test
+    @DisplayName("이미 회원가입한 이메일이면 회원가입 실패")
+    void duplicateEmailCheck() {
+        // given
+        CreateAdminRequest request = new CreateAdminRequest(
+                "채원", "test@test.com", "Dlcodnjs12#",
+                "010-0000-0000", AdminRole.CS_ADMIN
+        );
 
+        when(adminRepository.existsByEmail(request.email()))
+                .thenReturn(true);
+
+        // when & then
+       IllegalStateException exception = assertThrows(IllegalStateException.class, () -> adminService.create(request));
+       assertEquals("이미 가입한 이메일입니다.", exception.getLocalizedMessage() );
+
+    }
 
 }
