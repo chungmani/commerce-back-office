@@ -8,6 +8,7 @@ import com.example.commercebackoffice.domain.admin.entity.Admin;
 import com.example.commercebackoffice.domain.admin.enums.AdminRole;
 import com.example.commercebackoffice.domain.admin.enums.AdminState;
 import com.example.commercebackoffice.domain.admin.repository.AdminRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -34,15 +35,27 @@ class AdminServiceTest {
     @InjectMocks
     private AdminService adminService;
 
+    private Admin admin;
+    private CreateAdminRequest request;
+    private LoginRequest loginRequest;
+
+    @BeforeEach
+    void setUp() {
+        request = new CreateAdminRequest(
+                "채원", "test@test.com", "Rlacodnjs12#",
+                "010-0000-0000", AdminRole.CS_ADMIN
+        );
+
+        admin = new Admin("채원", "test@test.com",
+                "Rlacodnjs12#", "010-0000-0000", AdminRole.CS_ADMIN);
+
+        loginRequest = new LoginRequest("test@test.com", "Rlacodnjs12#");
+    }
+
     @Test
     @DisplayName("정상 회원가입")
     void signup() {
         // given
-        CreateAdminRequest request = new CreateAdminRequest(
-                "채원", "test@test.com", "Dlcodnjs12#",
-                "010-0000-0000", AdminRole.CS_ADMIN
-        );
-
         when(adminRepository.existsByEmail(request.email()))
                 .thenReturn(false);
 
@@ -75,11 +88,6 @@ class AdminServiceTest {
     @DisplayName("이미 회원가입한 이메일이면 회원가입 실패")
     void duplicateEmailCheck() {
         // given
-        CreateAdminRequest request = new CreateAdminRequest(
-                "채원", "test@test.com", "Dlcodnjs12#",
-                "010-0000-0000", AdminRole.CS_ADMIN
-        );
-
         when(adminRepository.existsByEmail(request.email()))
                 .thenReturn(true);
 
@@ -93,13 +101,13 @@ class AdminServiceTest {
     @DisplayName("슈퍼관리자로 회원가입시 회원가입 실패")
     void signupWithSuperAdmin() {
         // given
-        CreateAdminRequest request = new CreateAdminRequest(
-                "채원", "test@test.com", "Dlcodnjs12#",
+        CreateAdminRequest request1 = new CreateAdminRequest(
+                "채원", "test@test.com", "Rlacodnjs12#",
                 "010-0000-0000", AdminRole.SUPER_ADMIN
         );
 
         // when & then
-        IllegalStateException e = assertThrows(IllegalStateException.class, () -> adminService.create(request));
+        IllegalStateException e = assertThrows(IllegalStateException.class, () -> adminService.create(request1));
         assertEquals("슈퍼관리자로 가입할 수 없습니다.", e.getMessage());
     }
 
@@ -107,20 +115,37 @@ class AdminServiceTest {
     @DisplayName("로그인 성공 케이스")
     void login() {
         // given
-        Admin admin = new Admin("채원", "test@test.com",
-                "Rlacodnjs12#", "010-0000-0000", AdminRole.CS_ADMIN);
         admin.changeState(AdminState.ACTIVE);
-        LoginRequest request = new LoginRequest("test@test.com", "Rlacodnjs12#");
-        when(adminRepository.findByEmail(request.email())).thenReturn(Optional.of(admin));
-        when(passwordEncoder.matches(request.password(), admin.getPassword())).thenReturn(true);
+        when(adminRepository.findByEmail(loginRequest.email())).thenReturn(Optional.of(admin));
+        when(passwordEncoder.matches(loginRequest.password(), admin.getPassword())).thenReturn(true);
 
         // when
-        Admin result = adminService.login(request);
+        Admin result = adminService.login(loginRequest);
 
         // then
         assertEquals(admin, result);
     }
 
-    // 이메일 , 비밀번호 틀릴때
-    // 계정 상태에 따른 예외발생
+    @Test
+    @DisplayName("이메일이 일치하지 않을때 - 로그인 실패")
+    void misMatchEmail() {
+        // given
+        when(adminRepository.findByEmail(loginRequest.email())).thenReturn(Optional.empty());
+
+        // when & then
+        IllegalStateException e = assertThrows(IllegalStateException.class, () -> adminService.login(loginRequest));
+        assertEquals("이메일 또는 비밀번호가 일치하지 않습니다.", e.getMessage());
+    }
+
+    @Test
+    @DisplayName("비밀번호가 일치하지 않을때 - 로그인 실패")
+    void misMatchPassword() {
+        // given
+        when(adminRepository.findByEmail(loginRequest.email())).thenReturn(Optional.of(admin));
+        when(passwordEncoder.matches(loginRequest.password(), admin.getPassword())).thenReturn(false);
+
+        // when & then
+        IllegalStateException e = assertThrows(IllegalStateException.class, () -> adminService.login(loginRequest));
+        assertEquals("이메일 또는 비밀번호가 일치하지 않습니다.", e.getMessage());
+    }
 }
