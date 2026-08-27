@@ -3,8 +3,10 @@ package com.example.commercebackoffice.domain.admin.service;
 import com.example.commercebackoffice.common.security.PasswordEncoder;
 import com.example.commercebackoffice.domain.admin.dto.CreateAdminRequest;
 import com.example.commercebackoffice.domain.admin.dto.CreateAdminResponse;
+import com.example.commercebackoffice.domain.admin.dto.LoginRequest;
 import com.example.commercebackoffice.domain.admin.entity.Admin;
 import com.example.commercebackoffice.domain.admin.enums.AdminRole;
+import com.example.commercebackoffice.domain.admin.enums.AdminState;
 import com.example.commercebackoffice.domain.admin.repository.AdminRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -41,5 +43,21 @@ public class AdminService {
 
         Admin savedAdmin = adminRepository.save(admin);
         return CreateAdminResponse.from(savedAdmin);
+    }
+
+    // 로그인
+    public Admin login(LoginRequest request) {
+        Admin admin = adminRepository.findByEmail(request.email())
+                .orElseThrow(() -> new IllegalStateException("이메일 또는 비밀번호가 일치하지 않습니다."));
+
+        if (!passwordEncoder.matches(request.password(), admin.getPassword())) {
+            throw new IllegalStateException("이메일 또는 비밀번호가 일치하지 않습니다.");
+        }
+
+        if (!admin.getState().equals(AdminState.ACTIVE)) {
+            throw new IllegalStateException("로그인이 불가합니다.");
+        }
+
+        return admin;
     }
 }
