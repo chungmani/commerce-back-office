@@ -1,0 +1,45 @@
+package com.example.commercebackoffice.domain.admin.controller;
+
+import com.example.commercebackoffice.domain.admin.dto.SessionAdmin;
+import com.example.commercebackoffice.domain.admin.entity.Admin;
+import com.example.commercebackoffice.domain.admin.enums.AdminRole;
+import com.example.commercebackoffice.domain.admin.service.AdminService;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.mock.web.MockHttpSession;
+import static org.junit.jupiter.api.Assertions.*;
+
+
+@ExtendWith(MockitoExtension.class)
+class AdminControllerTest {
+
+    @Mock
+    private AdminService adminService;
+
+    @InjectMocks
+    private AdminController adminController;
+
+    @Test
+    @DisplayName("로그인된 관리자가 로그아웃")
+    void logout() {
+        // given
+        MockHttpSession session = new MockHttpSession();
+        Admin admin = new Admin("채원", "test@test.com",
+                "Rlacodnjs12#", "010-0000-0000", AdminRole.CS_ADMIN);
+        session.setAttribute("loginAdmin", SessionAdmin.from(admin));
+
+        // when
+        ResponseEntity<Void> response = adminController.logout(new SessionAdmin(1L, "test@test.com", AdminRole.CS_ADMIN), session);
+
+        // then
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+        assertTrue(session.isInvalid());
+    }
+
+}
