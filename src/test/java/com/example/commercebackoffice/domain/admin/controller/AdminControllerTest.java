@@ -19,9 +19,6 @@ import static org.junit.jupiter.api.Assertions.*;
 @ExtendWith(MockitoExtension.class)
 class AdminControllerTest {
 
-    @Mock
-    private AdminService adminService;
-
     @InjectMocks
     private AdminController adminController;
 
@@ -40,6 +37,19 @@ class AdminControllerTest {
         // then
         assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
         assertTrue(session.isInvalid());
+    }
+
+    @Test
+    @DisplayName("로그인 하지 않은 관리자가 로그아웃")
+    void nullLogout() {
+        // given
+        MockHttpSession session = new MockHttpSession();
+
+        // when
+        ResponseEntity<Void> response = adminController.logout(null, session);
+
+        // then
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }
 
 }
