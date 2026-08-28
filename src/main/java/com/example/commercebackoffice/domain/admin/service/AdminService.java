@@ -1,5 +1,9 @@
 package com.example.commercebackoffice.domain.admin.service;
 
+import com.example.commercebackoffice.common.exception.AdminLoginNotAllowedException;
+import com.example.commercebackoffice.common.exception.EmailAlreadyExistsException;
+import com.example.commercebackoffice.common.exception.InvalidLoginException;
+import com.example.commercebackoffice.common.exception.SuperAdminSignupNotAllowedException;
 import com.example.commercebackoffice.common.security.PasswordEncoder;
 import com.example.commercebackoffice.domain.admin.dto.CreateAdminRequest;
 import com.example.commercebackoffice.domain.admin.dto.CreateAdminResponse;
@@ -24,13 +28,13 @@ public class AdminService {
     @Transactional
     public CreateAdminResponse create(CreateAdminRequest request) {
 
-        if (request.role().equals(AdminRole.SUPER_ADMIN)) {
-            throw new IllegalStateException("슈퍼관리자로 가입할 수 없습니다.");
+        if (request.role() == AdminRole.SUPER_ADMIN) {
+            throw new SuperAdminSignupNotAllowedException("슈퍼관리자로 가입할 수 없습니다.");
         }
 
         boolean existEmail = adminRepository.existsByEmail(request.email());
         if (existEmail) {
-            throw new IllegalStateException("이미 가입한 이메일입니다.");
+            throw new EmailAlreadyExistsException("이미 가입한 이메일입니다.");
         }
 
         // 비밀번호 암호화
@@ -48,23 +52,14 @@ public class AdminService {
     // 로그인
     public Admin login(LoginRequest request) {
         Admin admin = adminRepository.findByEmail(request.email())
-                .orElseThrow(() -> new IllegalStateException("이메일 또는 비밀번호가 일치하지 않습니다."));
+                .orElseThrow(() -> new InvalidLoginException("이메일 또는 비밀번호가 일치하지 않습니다."));
 
         if (!passwordEncoder.matches(request.password(), admin.getPassword())) {
-            throw new IllegalStateException("이메일 또는 비밀번호가 일치하지 않습니다.");
+            throw new InvalidLoginException("이메일 또는 비밀번호가 일치하지 않습니다.");
         }
 
-        if (admin.getState().equals(AdminState.PENDING)) {
-            throw new IllegalStateException("승인대기 중인 계정입니다.");
-        }
-        if (admin.getState().equals(AdminState.INACTIVE)) {
-            throw new IllegalStateException("비활성화된 계정입니다.");
-        }
-        if (admin.getState().equals(AdminState.SUSPENDED)) {
-            throw new IllegalStateException("정지된 계정입니다.");
-        }
-        if (admin.getState().equals(AdminState.DENIED)) {
-            throw new IllegalStateException("거부된 계정입니다.");
+        if (!admin.getState().canLogin()) {
+            throw new AdminLoginNotAllowedException(admin.getState().getMessage());
         }
 
         return admin;
