@@ -12,9 +12,16 @@ import com.example.commercebackoffice.domain.admin.entity.Admin;
 import com.example.commercebackoffice.domain.admin.enums.AdminRole;
 import com.example.commercebackoffice.domain.admin.enums.AdminState;
 import com.example.commercebackoffice.domain.admin.repository.AdminRepository;
+import com.example.commercebackoffice.domain.auth.dto.GetAdminsResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -63,5 +70,16 @@ public class AdminService {
         }
 
         return admin;
+    }
+
+    // 관리자 리스트 조회
+    public Page<GetAdminsResponse> getAll(String keyword, AdminState state, AdminRole role, Pageable pageable) {
+        if (pageable.getPageNumber() < 1) {
+            throw new IllegalStateException("잘못된 페이지 요청입니다.");
+        }
+        pageable = PageRequest.of(pageable.getPageNumber() - 1, pageable.getPageSize(), pageable.getSort());
+
+        Page<Admin> admins = adminRepository.findAllByKeywordAndFilter(keyword, state, role, pageable);
+        return admins.map(GetAdminsResponse::from);
     }
 }
