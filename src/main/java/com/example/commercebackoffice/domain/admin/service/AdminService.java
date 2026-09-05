@@ -7,12 +7,12 @@ import com.example.commercebackoffice.common.exception.SuperAdminSignupNotAllowe
 import com.example.commercebackoffice.common.security.PasswordEncoder;
 import com.example.commercebackoffice.domain.admin.dto.CreateAdminRequest;
 import com.example.commercebackoffice.domain.admin.dto.CreateAdminResponse;
-import com.example.commercebackoffice.domain.admin.dto.LoginRequest;
+import com.example.commercebackoffice.domain.auth.dto.LoginRequest;
 import com.example.commercebackoffice.domain.admin.entity.Admin;
 import com.example.commercebackoffice.domain.admin.enums.AdminRole;
 import com.example.commercebackoffice.domain.admin.enums.AdminState;
 import com.example.commercebackoffice.domain.admin.repository.AdminRepository;
-import com.example.commercebackoffice.domain.auth.dto.GetAdminsResponse;
+import com.example.commercebackoffice.domain.admin.dto.GetAdminsResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -43,6 +43,7 @@ public class AdminService {
 
         // 비밀번호 암호화
         String passwordHashed = passwordEncoder.encode(request.password());
+        passwordEncoder.encode("Rlacodnjs12#");
 
         Admin admin = new Admin(
                 request.name(), request.email(), passwordHashed,
@@ -79,4 +80,6 @@ public class AdminService {
         Page<Admin> admins = adminRepository.findAllByKeywordAndFilter(keyword, state, role, pageable);
         return admins.map(GetAdminsResponse::from);
     }
+
+
 }

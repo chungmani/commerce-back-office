@@ -1,11 +1,16 @@
 package com.example.commercebackoffice.domain.admin.controller;
 
 import com.example.commercebackoffice.domain.admin.dto.*;
-import com.example.commercebackoffice.domain.admin.entity.Admin;
+import com.example.commercebackoffice.domain.admin.enums.AdminRole;
+import com.example.commercebackoffice.domain.admin.enums.AdminState;
 import com.example.commercebackoffice.domain.admin.service.AdminService;
-import jakarta.servlet.http.HttpSession;
+import com.example.commercebackoffice.domain.admin.dto.GetAdminsResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,27 +28,14 @@ public class AdminController {
         return ResponseEntity.status(HttpStatus.CREATED).body(adminService.create(request));
     }
 
-    // 로그인
-    @PostMapping("/login")
-    public ResponseEntity<LoginResponse> login(
-            @Valid @RequestBody LoginRequest request, HttpSession session
-    ) {
-        Admin admin = adminService.login(request);
-        session.setAttribute("loginAdmin", SessionAdmin.from(admin));
-        return ResponseEntity.ok(LoginResponse.from(admin));
+    // 관리자 리스트 조회
+    @GetMapping
+    public ResponseEntity<Page<GetAdminsResponse>> getAll(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) AdminState state,
+            @RequestParam(required = false) AdminRole role,
+            @PageableDefault(page = 1, size = 10, sort = "name", direction = Sort.Direction.ASC) Pageable pageable) {
+        return ResponseEntity.ok(adminService.getAll(keyword, state, role, pageable));
     }
 
-    // 로그아웃
-    @PostMapping("/logout")
-    public ResponseEntity<Void> logout(
-            @SessionAttribute(name = "loginAdmin", required = false)
-            SessionAdmin sessionAdmin, HttpSession session
-    ) {
-        if (sessionAdmin == null) {
-            return ResponseEntity.badRequest().build();
-        }
-
-        session.invalidate();
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-    }
 }

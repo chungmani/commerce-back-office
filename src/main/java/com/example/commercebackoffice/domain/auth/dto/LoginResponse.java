@@ -1,4 +1,4 @@
-package com.example.commercebackoffice.domain.admin.dto;
+package com.example.commercebackoffice.domain.auth.dto;
 
 import com.example.commercebackoffice.domain.admin.entity.Admin;
 
