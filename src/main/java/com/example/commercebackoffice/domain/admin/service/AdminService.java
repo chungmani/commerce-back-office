@@ -1,12 +1,10 @@
 package com.example.commercebackoffice.domain.admin.service;
 
-import com.example.commercebackoffice.common.exception.AdminLoginNotAllowedException;
-import com.example.commercebackoffice.common.exception.EmailAlreadyExistsException;
-import com.example.commercebackoffice.common.exception.InvalidLoginException;
-import com.example.commercebackoffice.common.exception.SuperAdminSignupNotAllowedException;
+import com.example.commercebackoffice.common.exception.*;
 import com.example.commercebackoffice.common.security.PasswordEncoder;
 import com.example.commercebackoffice.domain.admin.dto.CreateAdminRequest;
 import com.example.commercebackoffice.domain.admin.dto.CreateAdminResponse;
+import com.example.commercebackoffice.domain.admin.dto.GetAdminResponse;
 import com.example.commercebackoffice.domain.auth.dto.LoginRequest;
 import com.example.commercebackoffice.domain.admin.entity.Admin;
 import com.example.commercebackoffice.domain.admin.enums.AdminRole;
@@ -43,7 +41,6 @@ public class AdminService {
 
         // 비밀번호 암호화
         String passwordHashed = passwordEncoder.encode(request.password());
-        passwordEncoder.encode("Rlacodnjs12#");
 
         Admin admin = new Admin(
                 request.name(), request.email(), passwordHashed,
@@ -70,6 +67,8 @@ public class AdminService {
         return admin;
     }
 
+
+    // TODO: 관리자 조회, 수정, 삭제 부분에서 슈퍼관리자 인증/인가 로직 구현 필요
     // 관리자 리스트 조회
     public Page<GetAdminsResponse> getAll(String keyword, AdminState state, AdminRole role, Pageable pageable) {
         if (pageable.getPageNumber() < 1) {
@@ -79,6 +78,15 @@ public class AdminService {
 
         Page<Admin> admins = adminRepository.findAllByKeywordAndFilter(keyword, state, role, pageable);
         return admins.map(GetAdminsResponse::from);
+    }
+
+    // 관리자 상세 조회
+    public GetAdminResponse getOne(Long adminId) {
+        Admin admin = adminRepository.findById(adminId).orElseThrow(
+                () -> new NotFoundAdminException("관리자를 찾을 수 없습니다.")
+        );
+
+        return GetAdminResponse.from(admin);
     }
 
 

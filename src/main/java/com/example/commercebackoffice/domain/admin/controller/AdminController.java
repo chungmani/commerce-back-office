@@ -38,4 +38,10 @@ public class AdminController {
         return ResponseEntity.ok(adminService.getAll(keyword, state, role, pageable));
     }
 
+    // 관리자 상세 조회
+    @GetMapping("/{adminId}")
+    public ResponseEntity<GetAdminResponse> getOne(@PathVariable Long adminId) {
+        return ResponseEntity.ok(adminService.getOne(adminId));
+    }
+
 }

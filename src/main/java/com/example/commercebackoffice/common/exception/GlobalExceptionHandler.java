@@ -20,7 +20,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(EmailAlreadyExistsException.class)
     public ResponseEntity<String> handleEmailAlreadyExists(EmailAlreadyExistsException e) {
-        log.error("[ERROR] 이미 존재하는 이메일", e );
+        log.error("[ERROR] 이미 존재하는 이메일", e);
         return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
     }
 
@@ -36,6 +36,9 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
     }
 
-
-
+    @ExceptionHandler(NotFoundAdminException.class)
+    public ResponseEntity<String> handleNotFoundAdminException(NotFoundAdminException e) {
+        log.error("[ERROR] NotFoundAdminException 발생", e);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+    }
 }
