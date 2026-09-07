@@ -1,4 +1,4 @@
-package com.example.commercebackoffice.domain.admin.dto;
+package com.example.commercebackoffice.domain.auth.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

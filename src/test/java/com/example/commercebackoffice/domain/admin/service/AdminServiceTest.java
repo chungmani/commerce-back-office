@@ -3,7 +3,7 @@ package com.example.commercebackoffice.domain.admin.service;
 import com.example.commercebackoffice.common.security.PasswordEncoder;
 import com.example.commercebackoffice.domain.admin.dto.CreateAdminRequest;
 import com.example.commercebackoffice.domain.admin.dto.CreateAdminResponse;
-import com.example.commercebackoffice.domain.admin.dto.LoginRequest;
+import com.example.commercebackoffice.domain.auth.dto.LoginRequest;
 import com.example.commercebackoffice.domain.admin.entity.Admin;
 import com.example.commercebackoffice.domain.admin.enums.AdminRole;
 import com.example.commercebackoffice.domain.admin.enums.AdminState;
