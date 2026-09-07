@@ -2,15 +2,13 @@ package com.example.commercebackoffice.domain.admin.service;
 
 import com.example.commercebackoffice.common.exception.*;
 import com.example.commercebackoffice.common.security.PasswordEncoder;
-import com.example.commercebackoffice.domain.admin.dto.CreateAdminRequest;
-import com.example.commercebackoffice.domain.admin.dto.CreateAdminResponse;
-import com.example.commercebackoffice.domain.admin.dto.GetAdminResponse;
+import com.example.commercebackoffice.domain.admin.dto.*;
 import com.example.commercebackoffice.domain.auth.dto.LoginRequest;
 import com.example.commercebackoffice.domain.admin.entity.Admin;
 import com.example.commercebackoffice.domain.admin.enums.AdminRole;
 import com.example.commercebackoffice.domain.admin.enums.AdminState;
 import com.example.commercebackoffice.domain.admin.repository.AdminRepository;
-import com.example.commercebackoffice.domain.admin.dto.GetAdminsResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -90,4 +88,21 @@ public class AdminService {
     }
 
 
+    @Transactional
+    public UpdateAdminResponse update(Long adminId, UpdateAdminRequest request) {
+
+        Admin admin = adminRepository.findById(adminId).orElseThrow(
+                () -> new NotFoundAdminException("관리자를 찾을 수 없습니다.")
+        );
+
+        if (request.getEmail() != null) {
+            boolean isPresent = adminRepository.existsByEmailAndIdNot(request.getEmail(), adminId);
+            if (isPresent) {
+                throw new EmailAlreadyExistsException("이미 가입한 이메일입니다.");
+            }
+        }
+
+        admin.updateAdmin(request.getName(), request.getEmail(), request.getPhoneNumber());
+        return UpdateAdminResponse.from(admin);
+    }
 }

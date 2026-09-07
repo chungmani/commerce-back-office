@@ -44,4 +44,13 @@ public class AdminController {
         return ResponseEntity.ok(adminService.getOne(adminId));
     }
 
+
+    // 관리자 정보 수정
+    @PatchMapping("/{adminId}")
+    public ResponseEntity<UpdateAdminResponse> update(
+            @PathVariable Long adminId,
+            @Valid @RequestBody UpdateAdminRequest request
+    ) {
+        return ResponseEntity.ok(adminService.update(adminId, request));
+    }
 }
