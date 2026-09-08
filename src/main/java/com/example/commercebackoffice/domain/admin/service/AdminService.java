@@ -88,6 +88,7 @@ public class AdminService {
     }
 
 
+    // 관리자 정보 수정
     @Transactional
     public UpdateAdminResponse update(Long adminId, UpdateAdminRequest request) {
 
@@ -104,5 +105,16 @@ public class AdminService {
 
         admin.updateAdmin(request.getName(), request.getEmail(), request.getPhoneNumber());
         return UpdateAdminResponse.from(admin);
+    }
+
+    // 관리자 역할 변경
+    @Transactional
+    public ChangeAdminRoleResponse changeAdminRole(Long adminId, ChangeAdminRoleRequest request) {
+        Admin admin = adminRepository.findById(adminId).orElseThrow(
+                () -> new NotFoundAdminException("관리자를 찾을 수 없습니다.")
+        );
+
+        admin.changeRole(request.role());
+        return ChangeAdminRoleResponse.from(admin);
     }
 }
