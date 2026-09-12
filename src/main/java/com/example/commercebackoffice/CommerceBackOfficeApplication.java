@@ -9,8 +9,14 @@ import org.springframework.context.annotation.Bean;
 @SpringBootApplication
 public class CommerceBackOfficeApplication {
 
+    private static PasswordEncoder passwordEncoder;
+
     public static void main(String[] args) {
         SpringApplication.run(CommerceBackOfficeApplication.class, args);
+
+
+        String encoded = passwordEncoder.encode("Rlacodnjs12#");
+        System.out.println(encoded);
     }
 
 }
