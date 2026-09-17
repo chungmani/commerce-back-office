@@ -62,4 +62,12 @@ public class AdminController {
     ) {
         return ResponseEntity.ok(ApiResponse.success(ResponseCode.OK, adminService.changeAdminRole(adminId, request)));
     }
+
+    // 관리자 상태 변경
+    @PatchMapping("/{adminId}/state")
+    public ResponseEntity<ApiResponse<ChangeAdminStateResponse>> changeAdminState(
+            @PathVariable Long adminId, @Valid @RequestBody ChangeAdminStateRequest request
+    ) {
+        return ResponseEntity.ok(ApiResponse.success(ResponseCode.OK, adminService.changeAdminState(adminId, request)));
+    }
 }

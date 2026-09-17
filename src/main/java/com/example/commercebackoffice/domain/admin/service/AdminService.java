@@ -1,6 +1,6 @@
 package com.example.commercebackoffice.domain.admin.service;
 
-import com.example.commercebackoffice.common.exception.*;
+import com.example.commercebackoffice.common.exception.BusinessException;
 import com.example.commercebackoffice.common.global.ResponseCode;
 import com.example.commercebackoffice.common.security.PasswordEncoder;
 import com.example.commercebackoffice.domain.admin.dto.*;
@@ -9,7 +9,6 @@ import com.example.commercebackoffice.domain.admin.entity.Admin;
 import com.example.commercebackoffice.domain.admin.enums.AdminRole;
 import com.example.commercebackoffice.domain.admin.enums.AdminState;
 import com.example.commercebackoffice.domain.admin.repository.AdminRepository;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -66,8 +65,6 @@ public class AdminService {
         return admin;
     }
 
-
-    // TODO: 관리자 조회, 수정, 삭제 부분에서 슈퍼관리자 인증/인가 로직 구현 필요
     // 관리자 리스트 조회
     public Page<GetAdminsResponse> getAll(String keyword, AdminState state, AdminRole role, Pageable pageable) {
         if (pageable.getPageNumber() < 1) {
@@ -81,19 +78,16 @@ public class AdminService {
 
     // 관리자 상세 조회
     public GetAdminResponse getOne(Long adminId) {
-        Admin admin = adminRepository.findById(adminId).orElseThrow(
-                () -> new BusinessException(ResponseCode.ADMIN_NOT_FOUND));
+        Admin admin = getAdminById(adminId);
 
         return GetAdminResponse.from(admin);
     }
-
 
     // 관리자 정보 수정
     @Transactional
     public UpdateAdminResponse update(Long adminId, UpdateAdminRequest request) {
 
-        Admin admin = adminRepository.findById(adminId).orElseThrow(
-                () -> new BusinessException(ResponseCode.ADMIN_NOT_FOUND));
+        Admin admin = getAdminById(adminId);
 
         if (request.getEmail() != null) {
             boolean isPresent = adminRepository.existsByEmailAndIdNot(request.getEmail(), adminId);
@@ -109,10 +103,24 @@ public class AdminService {
     // 관리자 역할 변경
     @Transactional
     public ChangeAdminRoleResponse changeAdminRole(Long adminId, ChangeAdminRoleRequest request) {
-        Admin admin = adminRepository.findById(adminId).orElseThrow(
-                () -> new BusinessException(ResponseCode.ADMIN_NOT_FOUND));
+        Admin admin = getAdminById(adminId);
 
         admin.changeRole(request.role());
         return ChangeAdminRoleResponse.from(admin);
+    }
+
+    // 관리자 상태 변경
+    @Transactional
+    public ChangeAdminStateResponse changeAdminState(Long adminId, ChangeAdminStateRequest request) {
+        Admin admin = getAdminById(adminId);
+        admin.changeState(request.state());
+        return ChangeAdminStateResponse.from(admin);
+    }
+
+    // 공통메서드
+    private Admin getAdminById(Long adminId) {
+        return adminRepository.findById(adminId).orElseThrow(
+                () -> new BusinessException(ResponseCode.ADMIN_NOT_FOUND)
+        );
     }
 }
