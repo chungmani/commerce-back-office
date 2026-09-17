@@ -1,5 +1,7 @@
 package com.example.commercebackoffice.domain.admin.entity;
 
+import com.example.commercebackoffice.common.exception.BusinessException;
+import com.example.commercebackoffice.common.global.ResponseCode;
 import com.example.commercebackoffice.domain.admin.enums.AdminRole;
 import com.example.commercebackoffice.domain.admin.enums.AdminState;
 import com.example.commercebackoffice.common.entity.BaseEntity;
@@ -7,6 +9,8 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -36,6 +40,9 @@ public class Admin extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private AdminState state = AdminState.PENDING;
 
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
+
     public Admin(String name, String email, String password, String phoneNumber, AdminRole role) {
         this.name = name;
         this.email = email;
@@ -56,5 +63,9 @@ public class Admin extends BaseEntity {
 
     public void changeRole(AdminRole role) {
         this.role = role;
+    }
+
+    public void delete() {
+        this.deletedAt = LocalDateTime.now();
     }
 }

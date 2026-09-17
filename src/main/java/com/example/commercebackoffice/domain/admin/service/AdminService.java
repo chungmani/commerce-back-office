@@ -58,6 +58,10 @@ public class AdminService {
             throw new BusinessException(ResponseCode.INVALID_LOGIN);
         }
 
+        if (admin.getDeletedAt() != null) {
+            throw new BusinessException(ResponseCode.INVALID_LOGIN);
+        }
+
         if (!admin.getState().canLogin()) {
             throw new BusinessException(ResponseCode.ADMIN_LOGIN_NOT_ALLOWED);
         }
@@ -117,10 +121,17 @@ public class AdminService {
         return ChangeAdminStateResponse.from(admin);
     }
 
+    @Transactional
+    public void deleteAdmin(Long adminId) {
+        Admin admin = getAdminById(adminId);
+        admin.delete();
+    }
+
     // 공통메서드
     private Admin getAdminById(Long adminId) {
-        return adminRepository.findById(adminId).orElseThrow(
+        return adminRepository.findByIdNotDeleted(adminId).orElseThrow(
                 () -> new BusinessException(ResponseCode.ADMIN_NOT_FOUND)
         );
     }
+
 }

@@ -70,4 +70,11 @@ public class AdminController {
     ) {
         return ResponseEntity.ok(ApiResponse.success(ResponseCode.OK, adminService.changeAdminState(adminId, request)));
     }
+
+    // 관리자 삭제(탈퇴)
+    @DeleteMapping("/{adminId}")
+    public ResponseEntity<Void> deleteAdmin(@PathVariable Long adminId) {
+        adminService.deleteAdmin(adminId);
+        return ResponseEntity.noContent().build();
+    }
 }
