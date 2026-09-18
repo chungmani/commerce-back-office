@@ -21,7 +21,8 @@ public enum ResponseCode {
     ADMIN_NOT_FOUND(HttpStatus.NOT_FOUND, "ADMIN_03", "이메일 또는 비밀번호가 일치하지 않습니다."),
     EMAIL_ALREADY_EXISTS(HttpStatus.CONFLICT, "ADMIN_04", "중복된 이메일입니다."),
     ADMIN_LOGIN_NOT_ALLOWED(HttpStatus.FORBIDDEN, "ADMIN_05", "로그인 할 수 없는 계정입니다."),
-    FORBIDDEN_ADMIN(HttpStatus.FORBIDDEN, "ADMIN_06", "권한이 없습니다.");
+    FORBIDDEN_ADMIN(HttpStatus.FORBIDDEN, "ADMIN_06", "권한이 없습니다."),
+    NOT_PENDING_ADMIN(HttpStatus.BAD_REQUEST, "ADMIN_07", "승인대기인 관리자가 아닙니다.");
 
 
 

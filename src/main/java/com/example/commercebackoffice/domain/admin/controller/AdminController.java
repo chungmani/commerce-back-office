@@ -77,4 +77,19 @@ public class AdminController {
         adminService.deleteAdmin(adminId);
         return ResponseEntity.noContent().build();
     }
+
+    // 관리자 가입 승인
+    @PostMapping("/{adminId}/approve")
+    public ResponseEntity<ApiResponse<ApproveAdminResponse>> approve(@PathVariable Long adminId) {
+        return ResponseEntity.ok(ApiResponse.success(ResponseCode.OK, adminService.approve(adminId)));
+    }
+
+    // 관리자 가입 거부
+    @PostMapping("/{adminId}/reject")
+    public ResponseEntity<ApiResponse<RejectAdminResponse>> reject(
+            @PathVariable Long adminId,
+            @Valid @RequestBody RejectAdminRequest request
+    ) {
+        return ResponseEntity.ok(ApiResponse.success(ResponseCode.OK, adminService.reject(adminId, request)));
+    }
 }
