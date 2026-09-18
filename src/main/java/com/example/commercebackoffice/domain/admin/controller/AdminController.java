@@ -1,5 +1,7 @@
 package com.example.commercebackoffice.domain.admin.controller;
 
+import com.example.commercebackoffice.common.global.ApiResponse;
+import com.example.commercebackoffice.common.global.ResponseCode;
 import com.example.commercebackoffice.domain.admin.dto.*;
 import com.example.commercebackoffice.domain.admin.enums.AdminRole;
 import com.example.commercebackoffice.domain.admin.enums.AdminState;
@@ -11,7 +13,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,33 +25,56 @@ public class AdminController {
 
     // 회원가입
     @PostMapping("/signup")
-    public ResponseEntity<CreateAdminResponse> create(@Valid @RequestBody CreateAdminRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(adminService.create(request));
+    public ResponseEntity<ApiResponse<CreateAdminResponse>> create(@Valid @RequestBody CreateAdminRequest request) {
+        return ResponseEntity.status(ResponseCode.CREATED.getStatus()).body(ApiResponse.success(ResponseCode.CREATED, adminService.create(request)));
     }
 
     // 관리자 리스트 조회
     @GetMapping
-    public ResponseEntity<Page<GetAdminsResponse>> getAll(
+    public ResponseEntity<ApiResponse<Page<GetAdminsResponse>>> getAll(
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false) AdminState state,
             @RequestParam(required = false) AdminRole role,
             @PageableDefault(page = 1, size = 10, sort = "name", direction = Sort.Direction.ASC) Pageable pageable) {
-        return ResponseEntity.ok(adminService.getAll(keyword, state, role, pageable));
+        return ResponseEntity.ok(ApiResponse.success(ResponseCode.OK, adminService.getAll(keyword, state, role, pageable)));
     }
 
     // 관리자 상세 조회
     @GetMapping("/{adminId}")
-    public ResponseEntity<GetAdminResponse> getOne(@PathVariable Long adminId) {
-        return ResponseEntity.ok(adminService.getOne(adminId));
+    public ResponseEntity<ApiResponse<GetAdminResponse>> getOne(@PathVariable Long adminId) {
+        return ResponseEntity.ok(ApiResponse.success(ResponseCode.OK, adminService.getOne(adminId)));
     }
 
 
     // 관리자 정보 수정
     @PatchMapping("/{adminId}")
-    public ResponseEntity<UpdateAdminResponse> update(
+    public ResponseEntity<ApiResponse<UpdateAdminResponse>> update(
             @PathVariable Long adminId,
             @Valid @RequestBody UpdateAdminRequest request
     ) {
-        return ResponseEntity.ok(adminService.update(adminId, request));
+        return ResponseEntity.ok(ApiResponse.success(ResponseCode.OK, adminService.update(adminId, request)));
+    }
+
+    // 관리자 역할 변경
+    @PatchMapping("/{adminId}/role")
+    public ResponseEntity<ApiResponse<ChangeAdminRoleResponse>> changeAdminRole(
+            @PathVariable Long adminId, @Valid @RequestBody ChangeAdminRoleRequest request
+    ) {
+        return ResponseEntity.ok(ApiResponse.success(ResponseCode.OK, adminService.changeAdminRole(adminId, request)));
+    }
+
+    // 관리자 상태 변경
+    @PatchMapping("/{adminId}/state")
+    public ResponseEntity<ApiResponse<ChangeAdminStateResponse>> changeAdminState(
+            @PathVariable Long adminId, @Valid @RequestBody ChangeAdminStateRequest request
+    ) {
+        return ResponseEntity.ok(ApiResponse.success(ResponseCode.OK, adminService.changeAdminState(adminId, request)));
+    }
+
+    // 관리자 삭제(탈퇴)
+    @DeleteMapping("/{adminId}")
+    public ResponseEntity<Void> deleteAdmin(@PathVariable Long adminId) {
+        adminService.deleteAdmin(adminId);
+        return ResponseEntity.noContent().build();
     }
 }

@@ -1,6 +1,7 @@
 package com.example.commercebackoffice.domain.admin.service;
 
-import com.example.commercebackoffice.common.exception.*;
+import com.example.commercebackoffice.common.exception.BusinessException;
+import com.example.commercebackoffice.common.global.ResponseCode;
 import com.example.commercebackoffice.common.security.PasswordEncoder;
 import com.example.commercebackoffice.domain.admin.dto.*;
 import com.example.commercebackoffice.domain.auth.dto.LoginRequest;
@@ -8,7 +9,6 @@ import com.example.commercebackoffice.domain.admin.entity.Admin;
 import com.example.commercebackoffice.domain.admin.enums.AdminRole;
 import com.example.commercebackoffice.domain.admin.enums.AdminState;
 import com.example.commercebackoffice.domain.admin.repository.AdminRepository;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -29,12 +29,12 @@ public class AdminService {
     public CreateAdminResponse create(CreateAdminRequest request) {
 
         if (request.role() == AdminRole.SUPER_ADMIN) {
-            throw new SuperAdminSignupNotAllowedException("슈퍼관리자로 가입할 수 없습니다.");
+            throw new BusinessException(ResponseCode.SUPER_ADMIN_SIGNUP_NOT_ALLOWED);
         }
 
         boolean existEmail = adminRepository.existsByEmail(request.email());
         if (existEmail) {
-            throw new EmailAlreadyExistsException("이미 가입한 이메일입니다.");
+            throw new BusinessException(ResponseCode.EMAIL_ALREADY_EXISTS);
         }
 
         // 비밀번호 암호화
@@ -52,25 +52,27 @@ public class AdminService {
     // 로그인
     public Admin login(LoginRequest request) {
         Admin admin = adminRepository.findByEmail(request.email())
-                .orElseThrow(() -> new InvalidLoginException("이메일 또는 비밀번호가 일치하지 않습니다."));
+                .orElseThrow(() -> new BusinessException(ResponseCode.INVALID_LOGIN));
 
         if (!passwordEncoder.matches(request.password(), admin.getPassword())) {
-            throw new InvalidLoginException("이메일 또는 비밀번호가 일치하지 않습니다.");
+            throw new BusinessException(ResponseCode.INVALID_LOGIN);
+        }
+
+        if (admin.getDeletedAt() != null) {
+            throw new BusinessException(ResponseCode.INVALID_LOGIN);
         }
 
         if (!admin.getState().canLogin()) {
-            throw new AdminLoginNotAllowedException(admin.getState().getMessage());
+            throw new BusinessException(ResponseCode.ADMIN_LOGIN_NOT_ALLOWED);
         }
 
         return admin;
     }
 
-
-    // TODO: 관리자 조회, 수정, 삭제 부분에서 슈퍼관리자 인증/인가 로직 구현 필요
     // 관리자 리스트 조회
     public Page<GetAdminsResponse> getAll(String keyword, AdminState state, AdminRole role, Pageable pageable) {
         if (pageable.getPageNumber() < 1) {
-            throw new IllegalStateException("잘못된 페이지 요청입니다.");
+            throw new BusinessException(ResponseCode.BAD_REQUEST);
         }
         pageable = PageRequest.of(pageable.getPageNumber() - 1, pageable.getPageSize(), pageable.getSort());
 
@@ -80,29 +82,56 @@ public class AdminService {
 
     // 관리자 상세 조회
     public GetAdminResponse getOne(Long adminId) {
-        Admin admin = adminRepository.findById(adminId).orElseThrow(
-                () -> new NotFoundAdminException("관리자를 찾을 수 없습니다.")
-        );
+        Admin admin = getAdminById(adminId);
 
         return GetAdminResponse.from(admin);
     }
 
-
+    // 관리자 정보 수정
     @Transactional
     public UpdateAdminResponse update(Long adminId, UpdateAdminRequest request) {
 
-        Admin admin = adminRepository.findById(adminId).orElseThrow(
-                () -> new NotFoundAdminException("관리자를 찾을 수 없습니다.")
-        );
+        Admin admin = getAdminById(adminId);
 
         if (request.getEmail() != null) {
             boolean isPresent = adminRepository.existsByEmailAndIdNot(request.getEmail(), adminId);
             if (isPresent) {
-                throw new EmailAlreadyExistsException("이미 가입한 이메일입니다.");
+                throw new BusinessException(ResponseCode.EMAIL_ALREADY_EXISTS);
             }
         }
 
         admin.updateAdmin(request.getName(), request.getEmail(), request.getPhoneNumber());
         return UpdateAdminResponse.from(admin);
     }
+
+    // 관리자 역할 변경
+    @Transactional
+    public ChangeAdminRoleResponse changeAdminRole(Long adminId, ChangeAdminRoleRequest request) {
+        Admin admin = getAdminById(adminId);
+
+        admin.changeRole(request.role());
+        return ChangeAdminRoleResponse.from(admin);
+    }
+
+    // 관리자 상태 변경
+    @Transactional
+    public ChangeAdminStateResponse changeAdminState(Long adminId, ChangeAdminStateRequest request) {
+        Admin admin = getAdminById(adminId);
+        admin.changeState(request.state());
+        return ChangeAdminStateResponse.from(admin);
+    }
+
+    @Transactional
+    public void deleteAdmin(Long adminId) {
+        Admin admin = getAdminById(adminId);
+        admin.delete();
+    }
+
+    // 공통메서드
+    private Admin getAdminById(Long adminId) {
+        return adminRepository.findByIdNotDeleted(adminId).orElseThrow(
+                () -> new BusinessException(ResponseCode.ADMIN_NOT_FOUND)
+        );
+    }
+
 }

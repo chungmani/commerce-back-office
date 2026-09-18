@@ -7,7 +7,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 class CommerceBackOfficeApplicationTests {
 
     @Test
-    void contextLoads() {
+    void encodePassword() {
     }
-
 }
