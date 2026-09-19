@@ -9,6 +9,7 @@ import com.example.commercebackoffice.domain.admin.entity.Admin;
 import com.example.commercebackoffice.domain.admin.enums.AdminRole;
 import com.example.commercebackoffice.domain.admin.enums.AdminState;
 import com.example.commercebackoffice.domain.admin.repository.AdminRepository;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -150,6 +151,18 @@ public class AdminService {
         return GetProfileResponse.from(admin);
     }
 
+    @Transactional
+    public UpdateProfileResponse updateProfile(Long adminId, UpdateProfileRequest request) {
+        Admin admin = getAdminById(adminId);
+
+        boolean existEmail = adminRepository.existsByEmail(request.email());
+        if (existEmail && !request.email().equals(admin.getEmail())) {
+            throw new BusinessException(ResponseCode.EMAIL_ALREADY_EXISTS);
+        }
+
+        admin.updateAdmin(request.name(), request.email(), request.phoneNumber());
+        return UpdateProfileResponse.from(admin);
+    }
 
     // 공통메서드
     private Admin getAdminById(Long adminId) {
@@ -157,5 +170,6 @@ public class AdminService {
                 () -> new BusinessException(ResponseCode.ADMIN_NOT_FOUND)
         );
     }
+
 
 }

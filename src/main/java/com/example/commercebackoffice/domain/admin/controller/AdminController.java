@@ -10,6 +10,7 @@ import com.example.commercebackoffice.domain.admin.dto.GetAdminsResponse;
 import com.example.commercebackoffice.domain.auth.dto.SessionAdmin;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.apache.coyote.Response;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -103,4 +104,13 @@ public class AdminController {
         return ResponseEntity.ok(ApiResponse.success(ResponseCode.OK, adminService.getProfile(adminId)));
     }
 
+    // 내 프로필 수정
+    @PatchMapping("/me")
+    public ResponseEntity<ApiResponse<UpdateProfileResponse>> updateProfile(
+            @SessionAttribute(name = "loginAdmin") SessionAdmin sessionAdmin,
+            @Valid @RequestBody UpdateProfileRequest request
+    ) {
+        Long adminId = sessionAdmin.id();
+        return ResponseEntity.ok(ApiResponse.success(ResponseCode.OK, adminService.updateProfile(adminId, request)));
+    }
 }
