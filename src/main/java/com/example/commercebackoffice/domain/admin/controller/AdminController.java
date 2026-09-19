@@ -7,6 +7,7 @@ import com.example.commercebackoffice.domain.admin.enums.AdminRole;
 import com.example.commercebackoffice.domain.admin.enums.AdminState;
 import com.example.commercebackoffice.domain.admin.service.AdminService;
 import com.example.commercebackoffice.domain.admin.dto.GetAdminsResponse;
+import com.example.commercebackoffice.domain.auth.dto.SessionAdmin;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -92,4 +93,14 @@ public class AdminController {
     ) {
         return ResponseEntity.ok(ApiResponse.success(ResponseCode.OK, adminService.reject(adminId, request)));
     }
+
+    // 내 프로필 조회
+    @GetMapping("/me")
+    public ResponseEntity<ApiResponse<GetProfileResponse>> getProfile(
+            @SessionAttribute(name = "loginAdmin") SessionAdmin sessionAdmin
+    ) {
+        Long adminId = sessionAdmin.id();
+        return ResponseEntity.ok(ApiResponse.success(ResponseCode.OK, adminService.getProfile(adminId)));
+    }
+
 }

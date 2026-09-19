@@ -9,7 +9,6 @@ import com.example.commercebackoffice.domain.admin.entity.Admin;
 import com.example.commercebackoffice.domain.admin.enums.AdminRole;
 import com.example.commercebackoffice.domain.admin.enums.AdminState;
 import com.example.commercebackoffice.domain.admin.repository.AdminRepository;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -143,6 +142,14 @@ public class AdminService {
         return RejectAdminResponse.from(admin);
     }
 
+    public GetProfileResponse getProfile(Long adminId) {
+        Admin admin = getAdminById(adminId);
+        if (admin.getState() != AdminState.ACTIVE) {
+            throw new BusinessException(ResponseCode.FORBIDDEN_ADMIN);
+        }
+        return GetProfileResponse.from(admin);
+    }
+
 
     // 공통메서드
     private Admin getAdminById(Long adminId) {
@@ -150,4 +157,5 @@ public class AdminService {
                 () -> new BusinessException(ResponseCode.ADMIN_NOT_FOUND)
         );
     }
+
 }
