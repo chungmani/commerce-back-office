@@ -9,6 +9,7 @@ import com.example.commercebackoffice.domain.admin.entity.Admin;
 import com.example.commercebackoffice.domain.admin.enums.AdminRole;
 import com.example.commercebackoffice.domain.admin.enums.AdminState;
 import com.example.commercebackoffice.domain.admin.repository.AdminRepository;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -127,11 +128,61 @@ public class AdminService {
         admin.delete();
     }
 
+    @Transactional
+    public ApproveAdminResponse approve(Long adminId) {
+        Admin admin = getAdminById(adminId);
+        admin.approve();
+        return ApproveAdminResponse.from(admin);
+    }
+
+    @Transactional
+    public RejectAdminResponse reject(Long adminId, RejectAdminRequest request) {
+        Admin admin = getAdminById(adminId);
+        String reason = request.reason();
+        admin.reject(reason);
+        return RejectAdminResponse.from(admin);
+    }
+
+    public GetProfileResponse getProfile(Long adminId) {
+        Admin admin = getAdminById(adminId);
+        if (admin.getState() != AdminState.ACTIVE) {
+            throw new BusinessException(ResponseCode.FORBIDDEN_ADMIN);
+        }
+        return GetProfileResponse.from(admin);
+    }
+
+    @Transactional
+    public UpdateProfileResponse updateProfile(Long adminId, UpdateProfileRequest request) {
+        Admin admin = getAdminById(adminId);
+
+        boolean existEmail = adminRepository.existsByEmail(request.email());
+        if (existEmail && !request.email().equals(admin.getEmail())) {
+            throw new BusinessException(ResponseCode.EMAIL_ALREADY_EXISTS);
+        }
+
+        admin.updateAdmin(request.name(), request.email(), request.phoneNumber());
+        return UpdateProfileResponse.from(admin);
+    }
+
+    @Transactional
+    public void updatePw(Long adminId, UpdatePwRequest request) {
+        Admin admin = getAdminById(adminId);
+        if (!passwordEncoder.matches(request.currentPassword(), admin.getPassword())) {
+            throw new BusinessException(ResponseCode.INVALID_PASSWORD);
+        }
+        if (request.currentPassword().equals(request.newPassword())) {
+            throw new BusinessException(ResponseCode.DUPLICATED_PASSWORD);
+        }
+        String passwordHashed = passwordEncoder.encode(request.newPassword());
+        admin.updatePw(passwordHashed);
+    }
+
     // 공통메서드
     private Admin getAdminById(Long adminId) {
         return adminRepository.findByIdNotDeleted(adminId).orElseThrow(
                 () -> new BusinessException(ResponseCode.ADMIN_NOT_FOUND)
         );
     }
+
 
 }

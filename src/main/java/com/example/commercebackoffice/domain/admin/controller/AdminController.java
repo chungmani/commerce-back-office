@@ -7,8 +7,10 @@ import com.example.commercebackoffice.domain.admin.enums.AdminRole;
 import com.example.commercebackoffice.domain.admin.enums.AdminState;
 import com.example.commercebackoffice.domain.admin.service.AdminService;
 import com.example.commercebackoffice.domain.admin.dto.GetAdminsResponse;
+import com.example.commercebackoffice.domain.auth.dto.SessionAdmin;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.apache.coyote.Response;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -75,6 +77,51 @@ public class AdminController {
     @DeleteMapping("/{adminId}")
     public ResponseEntity<Void> deleteAdmin(@PathVariable Long adminId) {
         adminService.deleteAdmin(adminId);
+        return ResponseEntity.noContent().build();
+    }
+
+    // 관리자 가입 승인
+    @PostMapping("/{adminId}/approve")
+    public ResponseEntity<ApiResponse<ApproveAdminResponse>> approve(@PathVariable Long adminId) {
+        return ResponseEntity.ok(ApiResponse.success(ResponseCode.OK, adminService.approve(adminId)));
+    }
+
+    // 관리자 가입 거부
+    @PostMapping("/{adminId}/reject")
+    public ResponseEntity<ApiResponse<RejectAdminResponse>> reject(
+            @PathVariable Long adminId,
+            @Valid @RequestBody RejectAdminRequest request
+    ) {
+        return ResponseEntity.ok(ApiResponse.success(ResponseCode.OK, adminService.reject(adminId, request)));
+    }
+
+    // 내 프로필 조회
+    @GetMapping("/me")
+    public ResponseEntity<ApiResponse<GetProfileResponse>> getProfile(
+            @SessionAttribute(name = "loginAdmin") SessionAdmin sessionAdmin
+    ) {
+        Long adminId = sessionAdmin.id();
+        return ResponseEntity.ok(ApiResponse.success(ResponseCode.OK, adminService.getProfile(adminId)));
+    }
+
+    // 내 프로필 수정
+    @PatchMapping("/me")
+    public ResponseEntity<ApiResponse<UpdateProfileResponse>> updateProfile(
+            @SessionAttribute(name = "loginAdmin") SessionAdmin sessionAdmin,
+            @Valid @RequestBody UpdateProfileRequest request
+    ) {
+        Long adminId = sessionAdmin.id();
+        return ResponseEntity.ok(ApiResponse.success(ResponseCode.OK, adminService.updateProfile(adminId, request)));
+    }
+
+    // 비밀번호 변경
+    @PatchMapping("/me/pw")
+    public ResponseEntity<Void> updatePw(
+            @SessionAttribute(name = "loginAdmin") SessionAdmin sessionAdmin,
+            @Valid @RequestBody UpdatePwRequest request
+    ) {
+        Long adminId = sessionAdmin.id();
+        adminService.updatePw(adminId, request);
         return ResponseEntity.noContent().build();
     }
 }
