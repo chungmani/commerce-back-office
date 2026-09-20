@@ -8,17 +8,13 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Component;
-import org.springframework.util.PathMatcher;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 @Component
 public class AdminInterceptor implements HandlerInterceptor {
 
-    private final PathMatcher pathMatcher;
-
-    public AdminInterceptor(PathMatcher pathMatcher) {
-        this.pathMatcher = pathMatcher;
-    }
+    private final AntPathMatcher antPathMatcher = new AntPathMatcher();
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
@@ -36,10 +32,9 @@ public class AdminInterceptor implements HandlerInterceptor {
         }
 
         // 2. 요청이 admins/me 인가?
-        if (pathMatcher.match("/admins/me", request.getRequestURI())) {
+        if (antPathMatcher.match("/admins/me/**", request.getRequestURI())) {
             return true;
         }
-
 
         // 3. 슈퍼 관리자인가?
         if (sessionAdmin.role() != AdminRole.SUPER_ADMIN) {

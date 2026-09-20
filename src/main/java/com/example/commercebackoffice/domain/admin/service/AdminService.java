@@ -164,6 +164,19 @@ public class AdminService {
         return UpdateProfileResponse.from(admin);
     }
 
+    @Transactional
+    public void updatePw(Long adminId, UpdatePwRequest request) {
+        Admin admin = getAdminById(adminId);
+        if (!passwordEncoder.matches(request.currentPassword(), admin.getPassword())) {
+            throw new BusinessException(ResponseCode.INVALID_PASSWORD);
+        }
+        if (request.currentPassword().equals(request.newPassword())) {
+            throw new BusinessException(ResponseCode.DUPLICATED_PASSWORD);
+        }
+        String passwordHashed = passwordEncoder.encode(request.newPassword());
+        admin.updatePw(passwordHashed);
+    }
+
     // 공통메서드
     private Admin getAdminById(Long adminId) {
         return adminRepository.findByIdNotDeleted(adminId).orElseThrow(

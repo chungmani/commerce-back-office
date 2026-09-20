@@ -113,4 +113,15 @@ public class AdminController {
         Long adminId = sessionAdmin.id();
         return ResponseEntity.ok(ApiResponse.success(ResponseCode.OK, adminService.updateProfile(adminId, request)));
     }
+
+    // 비밀번호 변경
+    @PatchMapping("/me/pw")
+    public ResponseEntity<Void> updatePw(
+            @SessionAttribute(name = "loginAdmin") SessionAdmin sessionAdmin,
+            @Valid @RequestBody UpdatePwRequest request
+    ) {
+        Long adminId = sessionAdmin.id();
+        adminService.updatePw(adminId, request);
+        return ResponseEntity.noContent().build();
+    }
 }

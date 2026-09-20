@@ -22,7 +22,9 @@ public enum ResponseCode {
     EMAIL_ALREADY_EXISTS(HttpStatus.CONFLICT, "ADMIN_04", "중복된 이메일입니다."),
     ADMIN_LOGIN_NOT_ALLOWED(HttpStatus.FORBIDDEN, "ADMIN_05", "로그인 할 수 없는 계정입니다."),
     FORBIDDEN_ADMIN(HttpStatus.FORBIDDEN, "ADMIN_06", "권한이 없습니다."),
-    NOT_PENDING_ADMIN(HttpStatus.BAD_REQUEST, "ADMIN_07", "승인대기인 관리자가 아닙니다.");
+    NOT_PENDING_ADMIN(HttpStatus.BAD_REQUEST, "ADMIN_07", "승인대기인 관리자가 아닙니다."),
+    INVALID_PASSWORD(HttpStatus.CONFLICT, "ADMIN_08", "비밀번호가 일치하지 않습니다."),
+    DUPLICATED_PASSWORD(HttpStatus.CONFLICT, "ADMIN_09", "동일한 비밀번호로 설정할 수 없습니다.");
 
 
 

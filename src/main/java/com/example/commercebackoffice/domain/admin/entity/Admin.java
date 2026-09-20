@@ -67,6 +67,10 @@ public class Admin extends BaseEntity {
         this.phoneNumber = phoneNumber;
     }
 
+    public void updatePw(String password) {
+        this.password = password;
+    }
+
     public void changeState(AdminState state) {
         this.state = state;
     }
