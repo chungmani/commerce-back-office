@@ -2,13 +2,11 @@ package com.example.commercebackoffice.domain.customer.service;
 
 import com.example.commercebackoffice.common.exception.BusinessException;
 import com.example.commercebackoffice.common.global.ResponseCode;
-import com.example.commercebackoffice.domain.customer.dto.GetCustomerResponse;
-import com.example.commercebackoffice.domain.customer.dto.GetCustomersResponse;
-import com.example.commercebackoffice.domain.customer.dto.UpdateCustomerRequest;
-import com.example.commercebackoffice.domain.customer.dto.UpdateCustomerResponse;
+import com.example.commercebackoffice.domain.customer.dto.*;
 import com.example.commercebackoffice.domain.customer.entity.Customer;
 import com.example.commercebackoffice.domain.customer.enums.CustomerState;
 import com.example.commercebackoffice.domain.customer.repository.CustomerRepository;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -52,10 +50,19 @@ public class CustomerService {
         return UpdateCustomerResponse.from(customer);
     }
 
+    // 고객 상태 변경
+    @Transactional
+    public ChangeCustomerStateResponse changeState(Long customerId, ChangeCustomerStateRequest request) {
+        Customer customer = getCustomerById(customerId);
+        customer.changeState(request.state());
+        return ChangeCustomerStateResponse.from(customer);
+    }
+
     // 공통 메서드
     private Customer getCustomerById(Long customerId) {
         return customerRepository.findById(customerId).orElseThrow(
                 () -> new BusinessException(ResponseCode.CUSTOMER_NOT_FOUND)
         );
     }
+
 }

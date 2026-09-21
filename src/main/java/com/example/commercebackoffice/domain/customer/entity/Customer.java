@@ -7,6 +7,8 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Getter
 @Table(name = "customers")
@@ -29,6 +31,9 @@ public class Customer extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private CustomerState state;
 
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
+
     public Customer(String name, String email, String phoneNumber) {
         this.name = name;
         this.email = email;
@@ -40,6 +45,14 @@ public class Customer extends BaseEntity {
         this.name = name;
         this.email = email;
         this.phoneNumber = phoneNumber;
+    }
+
+    public void changeState(CustomerState state) {
+        this.state = state;
+    }
+
+    public void delete() {
+        this.deletedAt = LocalDateTime.now();
     }
 
 }

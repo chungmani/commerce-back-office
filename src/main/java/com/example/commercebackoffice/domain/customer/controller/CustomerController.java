@@ -2,10 +2,7 @@ package com.example.commercebackoffice.domain.customer.controller;
 
 import com.example.commercebackoffice.common.global.ApiResponse;
 import com.example.commercebackoffice.common.global.ResponseCode;
-import com.example.commercebackoffice.domain.customer.dto.GetCustomerResponse;
-import com.example.commercebackoffice.domain.customer.dto.GetCustomersResponse;
-import com.example.commercebackoffice.domain.customer.dto.UpdateCustomerRequest;
-import com.example.commercebackoffice.domain.customer.dto.UpdateCustomerResponse;
+import com.example.commercebackoffice.domain.customer.dto.*;
 import com.example.commercebackoffice.domain.customer.entity.Customer;
 import com.example.commercebackoffice.domain.customer.enums.CustomerState;
 import com.example.commercebackoffice.domain.customer.service.CustomerService;
@@ -50,5 +47,14 @@ public class CustomerController {
             @Valid @RequestBody UpdateCustomerRequest request
     ) {
         return ResponseEntity.ok(ApiResponse.success(ResponseCode.OK, customerService.update(customerId, request)));
+    }
+
+    // 고객 상태 변경
+    @PatchMapping("/{customerId}/state")
+    public ResponseEntity<ApiResponse<ChangeCustomerStateResponse>> changeState(
+            @PathVariable Long customerId,
+            @Valid @RequestBody ChangeCustomerStateRequest request
+    ) {
+        return ResponseEntity.ok(ApiResponse.success(ResponseCode.OK, customerService.changeState(customerId, request)));
     }
 }
