@@ -58,11 +58,19 @@ public class CustomerService {
         return ChangeCustomerStateResponse.from(customer);
     }
 
+    // 고객 삭제(탈퇴)
+    @Transactional
+    public void delete(Long customerId) {
+        Customer customer = getCustomerById(customerId);
+        customer.delete();
+    }
+
     // 공통 메서드
     private Customer getCustomerById(Long customerId) {
-        return customerRepository.findById(customerId).orElseThrow(
+        return customerRepository.findByIdNotDeleted(customerId).orElseThrow(
                 () -> new BusinessException(ResponseCode.CUSTOMER_NOT_FOUND)
         );
     }
+
 
 }

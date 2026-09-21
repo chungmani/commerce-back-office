@@ -10,15 +10,21 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.Optional;
+
 public interface CustomerRepository extends JpaRepository<Customer, Long> {
 
     @Query("""
-    SELECT c FROM Customer c
-        WHERE (:keyword IS NULL OR (c.name LIKE CONCAT('%', :keyword, '%')) OR 
-            (c.email LIKE CONCAT('%', :keyword, '%'))) AND (:state IS NULL OR c.state = :state) 
+
+            SELECT c FROM Customer c
+        WHERE (c.deletedAt IS NULL) AND (:keyword IS NULL OR (c.name LIKE CONCAT('%', :keyword, '%')) OR 
+            (c.email LIKE CONCAT('%', :keyword, '%'))) AND (:state IS NULL OR c.state = :state)
     """)
     Page<Customer> findAllByKeywordAndFilter(@Param("keyword") String keyword, @Param("state") CustomerState state, Pageable pageable);
 
-    @Query("SELECT c FROM Customer c WHERE c.email = :email")
-    boolean existsByEmail(@Param("email") String email);
-}
+    @Query("SELECT c FROM Customer c WHERE c.id =:customerId AND c.deletedAt IS NULL")
+    Optional<Customer> findByIdNotDeleted(@Param("customerId") Long customerId);
+
+    boolean existsByEmail(String email);
+
+    }

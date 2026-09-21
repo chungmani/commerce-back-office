@@ -57,4 +57,12 @@ public class CustomerController {
     ) {
         return ResponseEntity.ok(ApiResponse.success(ResponseCode.OK, customerService.changeState(customerId, request)));
     }
+
+    // 고객 삭제(탈퇴)
+    @DeleteMapping("/{customerId}")
+    public ResponseEntity<Void> delete(@PathVariable Long customerId) {
+        customerService.delete(customerId);
+        return ResponseEntity.noContent().build();
+    }
+
 }
