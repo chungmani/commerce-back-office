@@ -27,8 +27,14 @@ public enum ResponseCode {
     DUPLICATED_PASSWORD(HttpStatus.CONFLICT, "ADMIN_08", "동일한 비밀번호로 설정할 수 없습니다."),
 
     // customer
-    CUSTOMER_NOT_FOUND(HttpStatus.NOT_FOUND, "CUSTOMER_01", "고객을 찾을 수 없습니다.");
+    CUSTOMER_NOT_FOUND(HttpStatus.NOT_FOUND, "CUSTOMER_01", "고객을 찾을 수 없습니다."),
 
+    // product
+    PRODUCT_INVALID_STOCK(HttpStatus.BAD_REQUEST, "PRODUCT_01", "재고는 0개 이상이어야 합니다."),
+    PRODUCT_INVALID_PRICE(HttpStatus.BAD_REQUEST, "PRODUCT_02", "가격은 0원 이상이어야 합니다."),
+    PRODUCT_NOT_FOUND(HttpStatus.NOT_FOUND, "PRODCUT_03", "상품을 찾을 수 없습니다."),
+    PRODUCT_INSUFFICIENT_STOCK(HttpStatus.BAD_REQUEST, "PRODUCT_04", "상품의 재고가 부족합니다."),
+    PRODUCT_INVALID_STOCK_QUANTITY(HttpStatus.BAD_REQUEST, "PRODUCT_05", "재고 변경 수량은 1개 이상이어야 합니다.");
 
 
     private final HttpStatus status;
