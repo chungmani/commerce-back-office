@@ -122,12 +122,14 @@ public class AdminService {
         return ChangeAdminStateResponse.from(admin);
     }
 
+    // 관리자 삭제
     @Transactional
     public void deleteAdmin(Long adminId) {
         Admin admin = getAdminById(adminId);
         admin.delete();
     }
 
+    // 관리자 승인
     @Transactional
     public ApproveAdminResponse approve(Long adminId) {
         Admin admin = getAdminById(adminId);
@@ -135,6 +137,7 @@ public class AdminService {
         return ApproveAdminResponse.from(admin);
     }
 
+    // 관리자 거부
     @Transactional
     public RejectAdminResponse reject(Long adminId, RejectAdminRequest request) {
         Admin admin = getAdminById(adminId);
@@ -143,6 +146,7 @@ public class AdminService {
         return RejectAdminResponse.from(admin);
     }
 
+    // 프로필 조회
     public GetProfileResponse getProfile(Long adminId) {
         Admin admin = getAdminById(adminId);
         if (admin.getState() != AdminState.ACTIVE) {
@@ -151,6 +155,7 @@ public class AdminService {
         return GetProfileResponse.from(admin);
     }
 
+    // 프로필 수정
     @Transactional
     public UpdateProfileResponse updateProfile(Long adminId, UpdateProfileRequest request) {
         Admin admin = getAdminById(adminId);
@@ -164,6 +169,7 @@ public class AdminService {
         return UpdateProfileResponse.from(admin);
     }
 
+    // 비밀번호 변경
     @Transactional
     public void updatePw(Long adminId, UpdatePwRequest request) {
         Admin admin = getAdminById(adminId);
