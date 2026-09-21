@@ -5,6 +5,7 @@ import com.example.commercebackoffice.common.global.ResponseCode;
 import com.example.commercebackoffice.domain.auth.dto.SessionAdmin;
 import com.example.commercebackoffice.domain.product.dto.CreateProductRequest;
 import com.example.commercebackoffice.domain.product.dto.CreateProductResponse;
+import com.example.commercebackoffice.domain.product.dto.GetProductResponse;
 import com.example.commercebackoffice.domain.product.dto.GetProductsResponse;
 import com.example.commercebackoffice.domain.product.enums.ProductState;
 import com.example.commercebackoffice.domain.product.service.ProductService;
@@ -43,5 +44,13 @@ public class ProductController {
             @PageableDefault(page = 1, size = 10, sort = "price", direction = Sort.Direction.ASC)Pageable pageable
             ) {
         return ResponseEntity.ok(ApiResponse.success(ResponseCode.OK, productService.findAll(keyword, category, state, pageable)));
+    }
+
+    // 상품 상세 조회
+    @GetMapping("/{productId}")
+    public ResponseEntity<ApiResponse<GetProductResponse>> getOne(
+            @PathVariable Long productId
+    ) {
+        return ResponseEntity.ok(ApiResponse.success(ResponseCode.OK, productService.findOne(productId)));
     }
 }

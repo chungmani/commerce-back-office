@@ -14,16 +14,14 @@ public record GetProductsResponse(
         int stock,
         ProductState state,
         LocalDateTime createdAt,
-        String adminName,
-        String adminEmail
+        String adminName
 ) {
     public static GetProductsResponse from(Product product) {
         return new GetProductsResponse(
                 product.getId(), product.getName(),
                 product.getCategory(), product.getPrice(),
                 product.getStock(), product.getState(),
-                product.getCreatedAt(), product.getAdmin().getName(),
-                product.getAdmin().getEmail()
+                product.getCreatedAt(), product.getAdmin().getName()
         );
 
     }
