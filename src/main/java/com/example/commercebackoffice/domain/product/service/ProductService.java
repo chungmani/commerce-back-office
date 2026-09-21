@@ -65,6 +65,21 @@ public class ProductService {
         return UpdateProductResponse.from(product);
     }
 
+    // 상품 상태 변경
+    @Transactional
+    public ChangeProductStateResponse change(Long productId, ChangeProductStateRequest request) {
+        Product product = getProductById(productId);
+        product.changeProductState(request.state());
+        return ChangeProductStateResponse.from(product);
+    }
+
+    // 상품 삭제
+    @Transactional
+    public void delete(Long productId) {
+        Product product = getProductById(productId);
+        productRepository.delete(product);
+    }
+
     // 상품 재고 변경 메서드
     @Transactional
     public void changeStock(Long productId, int quantity) {
@@ -85,14 +100,6 @@ public class ProductService {
         if (product.getStock() >= 1) {
             product.changeProductState(ProductState.ON_SALE);
         }
-    }
-
-    // 상품 상태 변경
-    @Transactional
-    public ChangeProductStateResponse change(Long productId, ChangeProductStateRequest request) {
-        Product product = getProductById(productId);
-        product.changeProductState(request.state());
-        return ChangeProductStateResponse.from(product);
     }
 
 
