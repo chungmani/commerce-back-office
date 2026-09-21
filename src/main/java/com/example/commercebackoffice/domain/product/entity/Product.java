@@ -63,4 +63,15 @@ public class Product extends BaseEntity {
         this.category = category;
         this.price = price;
     }
+
+    public void decreaseStock(int quantity) {
+        if (quantity <= 0) {
+            throw new BusinessException(ResponseCode.PRODUCT_INVALID_STOCK_QUANTITY);
+        }
+        this.stock -= quantity;
+    }
+
+    public void changeProductState(ProductState state) {
+        this.state = state;
+    }
 }
