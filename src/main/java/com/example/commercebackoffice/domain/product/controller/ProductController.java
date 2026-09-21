@@ -60,4 +60,16 @@ public class ProductController {
     ) {
         return ResponseEntity.ok(ApiResponse.success(ResponseCode.OK, productService.update(productId, request)));
     }
+
+    // 상품 상태 변경
+    @PatchMapping("/{productId}/state")
+    public ResponseEntity<ApiResponse<ChangeProductStateResponse>> change(
+            @PathVariable Long productId,
+            @Valid @RequestBody ChangeProductStateRequest request
+    ) {
+        return ResponseEntity.ok(ApiResponse.success(ResponseCode.OK, productService.change(productId, request)));
+    }
+
+    // 상품 삭제
+
 }

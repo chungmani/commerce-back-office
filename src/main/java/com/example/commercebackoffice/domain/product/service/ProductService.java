@@ -8,6 +8,7 @@ import com.example.commercebackoffice.domain.product.dto.*;
 import com.example.commercebackoffice.domain.product.entity.Product;
 import com.example.commercebackoffice.domain.product.enums.ProductState;
 import com.example.commercebackoffice.domain.product.repository.ProductRepository;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -78,13 +79,20 @@ public class ProductService {
         if (product.getState().equals(ProductState.DISCONTINUED)) {
             return;
         }
-
         if (product.getStock() == 0) {
             product.changeProductState(ProductState.SOLD_OUT);
         }
         if (product.getStock() >= 1) {
             product.changeProductState(ProductState.ON_SALE);
         }
+    }
+
+    // 상품 상태 변경
+    @Transactional
+    public ChangeProductStateResponse change(Long productId, ChangeProductStateRequest request) {
+        Product product = getProductById(productId);
+        product.changeProductState(request.state());
+        return ChangeProductStateResponse.from(product);
     }
 
 
