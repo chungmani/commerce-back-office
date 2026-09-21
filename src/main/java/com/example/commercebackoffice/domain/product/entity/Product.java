@@ -53,4 +53,14 @@ public class Product extends BaseEntity {
         this.state = state;
         this.admin = admin;
     }
+
+    public void updateProduct(String name, String category, int price) {
+        if (price < 0) {
+            throw new BusinessException(ResponseCode.PRODUCT_INVALID_PRICE);
+        }
+
+        this.name = name;
+        this.category = category;
+        this.price = price;
+    }
 }

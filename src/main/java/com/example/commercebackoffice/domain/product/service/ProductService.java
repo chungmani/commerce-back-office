@@ -4,10 +4,7 @@ import com.example.commercebackoffice.common.exception.BusinessException;
 import com.example.commercebackoffice.common.global.ResponseCode;
 import com.example.commercebackoffice.domain.admin.entity.Admin;
 import com.example.commercebackoffice.domain.admin.service.AdminService;
-import com.example.commercebackoffice.domain.product.dto.CreateProductRequest;
-import com.example.commercebackoffice.domain.product.dto.CreateProductResponse;
-import com.example.commercebackoffice.domain.product.dto.GetProductResponse;
-import com.example.commercebackoffice.domain.product.dto.GetProductsResponse;
+import com.example.commercebackoffice.domain.product.dto.*;
 import com.example.commercebackoffice.domain.product.entity.Product;
 import com.example.commercebackoffice.domain.product.enums.ProductState;
 import com.example.commercebackoffice.domain.product.repository.ProductRepository;
@@ -59,10 +56,20 @@ public class ProductService {
         return GetProductResponse.from(product);
     }
 
+    // 상품 정보 수정
+    @Transactional
+    public UpdateProductResponse update(Long productId, UpdateProductRequest request) {
+        Product product = getProductById(productId);
+        product.updateProduct(request.name(), request.category(), request.price());
+        return UpdateProductResponse.from(product);
+    }
+
     // 상품 조회 공통 메서드
     private Product getProductById (Long productId) {
         return productRepository.findById(productId).orElseThrow(
                 () -> new BusinessException(ResponseCode.PRODUCT_NOT_FOUND)
         );
     }
+
+
 }

@@ -3,10 +3,7 @@ package com.example.commercebackoffice.domain.product.controller;
 import com.example.commercebackoffice.common.global.ApiResponse;
 import com.example.commercebackoffice.common.global.ResponseCode;
 import com.example.commercebackoffice.domain.auth.dto.SessionAdmin;
-import com.example.commercebackoffice.domain.product.dto.CreateProductRequest;
-import com.example.commercebackoffice.domain.product.dto.CreateProductResponse;
-import com.example.commercebackoffice.domain.product.dto.GetProductResponse;
-import com.example.commercebackoffice.domain.product.dto.GetProductsResponse;
+import com.example.commercebackoffice.domain.product.dto.*;
 import com.example.commercebackoffice.domain.product.enums.ProductState;
 import com.example.commercebackoffice.domain.product.service.ProductService;
 import jakarta.validation.Valid;
@@ -32,7 +29,8 @@ public class ProductController {
             @SessionAttribute(name = "loginAdmin")SessionAdmin sessionAdmin
             ) {
         Long adminId = sessionAdmin.id();
-        return ResponseEntity.ok(ApiResponse.success(ResponseCode.CREATED, productService.create(request, adminId)));
+        return ResponseEntity.status(ResponseCode.CREATED.getStatus())
+                .body(ApiResponse.success(ResponseCode.CREATED, productService.create(request, adminId)));
     }
 
     // 상품 전체 조회
@@ -52,5 +50,14 @@ public class ProductController {
             @PathVariable Long productId
     ) {
         return ResponseEntity.ok(ApiResponse.success(ResponseCode.OK, productService.findOne(productId)));
+    }
+
+    // 상품 정보 수정
+    @PatchMapping("/{productId}")
+    public ResponseEntity<ApiResponse<UpdateProductResponse>> update(
+            @PathVariable Long productId,
+            @Valid @RequestBody UpdateProductRequest request
+    ) {
+        return ResponseEntity.ok(ApiResponse.success(ResponseCode.OK, productService.update(productId, request)));
     }
 }
