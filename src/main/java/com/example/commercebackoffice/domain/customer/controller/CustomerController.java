@@ -4,8 +4,12 @@ import com.example.commercebackoffice.common.global.ApiResponse;
 import com.example.commercebackoffice.common.global.ResponseCode;
 import com.example.commercebackoffice.domain.customer.dto.GetCustomerResponse;
 import com.example.commercebackoffice.domain.customer.dto.GetCustomersResponse;
+import com.example.commercebackoffice.domain.customer.dto.UpdateCustomerRequest;
+import com.example.commercebackoffice.domain.customer.dto.UpdateCustomerResponse;
+import com.example.commercebackoffice.domain.customer.entity.Customer;
 import com.example.commercebackoffice.domain.customer.enums.CustomerState;
 import com.example.commercebackoffice.domain.customer.service.CustomerService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -37,5 +41,14 @@ public class CustomerController {
             @PathVariable Long customerId
     ) {
         return ResponseEntity.ok(ApiResponse.success(ResponseCode.OK, customerService.findOne(customerId)));
+    }
+
+    // 고객 정보 수정
+    @PatchMapping("/{customerId}")
+    public ResponseEntity<ApiResponse<UpdateCustomerResponse>> update(
+            @PathVariable Long customerId,
+            @Valid @RequestBody UpdateCustomerRequest request
+    ) {
+        return ResponseEntity.ok(ApiResponse.success(ResponseCode.OK, customerService.update(customerId, request)));
     }
 }

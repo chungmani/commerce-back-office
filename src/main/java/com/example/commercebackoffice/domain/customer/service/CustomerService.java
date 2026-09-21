@@ -4,6 +4,8 @@ import com.example.commercebackoffice.common.exception.BusinessException;
 import com.example.commercebackoffice.common.global.ResponseCode;
 import com.example.commercebackoffice.domain.customer.dto.GetCustomerResponse;
 import com.example.commercebackoffice.domain.customer.dto.GetCustomersResponse;
+import com.example.commercebackoffice.domain.customer.dto.UpdateCustomerRequest;
+import com.example.commercebackoffice.domain.customer.dto.UpdateCustomerResponse;
 import com.example.commercebackoffice.domain.customer.entity.Customer;
 import com.example.commercebackoffice.domain.customer.enums.CustomerState;
 import com.example.commercebackoffice.domain.customer.repository.CustomerRepository;
@@ -34,9 +36,26 @@ public class CustomerService {
 
     // 고객 상세 조회
     public GetCustomerResponse findOne(Long customerId) {
-        Customer customer = customerRepository.findById(customerId).orElseThrow(
+        Customer customer = getCustomerById(customerId);
+        return GetCustomerResponse.from(customer);
+    }
+
+    // 고객 정보 수정
+    @Transactional
+    public UpdateCustomerResponse update(Long customerId, UpdateCustomerRequest request) {
+        Customer customer = getCustomerById(customerId);
+        boolean isExist = customerRepository.existsByEmail(request.email());
+        if (isExist && !customer.getEmail().equals(request.email())) {
+            throw new BusinessException(ResponseCode.EMAIL_ALREADY_EXISTS);
+        }
+        customer.updateCustomer(request.name(), request.email(), request.phoneNumber());
+        return UpdateCustomerResponse.from(customer);
+    }
+
+    // 공통 메서드
+    private Customer getCustomerById(Long customerId) {
+        return customerRepository.findById(customerId).orElseThrow(
                 () -> new BusinessException(ResponseCode.CUSTOMER_NOT_FOUND)
         );
-        return GetCustomerResponse.from(customer);
     }
 }

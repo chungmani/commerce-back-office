@@ -2,6 +2,8 @@ package com.example.commercebackoffice.domain.customer.repository;
 
 import com.example.commercebackoffice.domain.customer.entity.Customer;
 import com.example.commercebackoffice.domain.customer.enums.CustomerState;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -16,4 +18,7 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
             (c.email LIKE CONCAT('%', :keyword, '%'))) AND (:state IS NULL OR c.state = :state) 
     """)
     Page<Customer> findAllByKeywordAndFilter(@Param("keyword") String keyword, @Param("state") CustomerState state, Pageable pageable);
+
+    @Query("SELECT c FROM Customer c WHERE c.email = :email")
+    boolean existsByEmail(@Param("email") String email);
 }
