@@ -22,7 +22,7 @@ public interface AdminRepository extends JpaRepository<Admin, Long> {
      WHERE (:keyword IS NULL OR (a.name LIKE CONCAT('%', :keyword, '%')) OR (a.email LIKE CONCAT('%', :keyword, '%')))
          AND (:state IS NULL OR a.state = :state) AND (:role IS NULL OR a.role = :role) AND a.deletedAt IS NULL
     """)
-    Page<Admin> findAllByKeywordAndFilter(String keyword, AdminState state, AdminRole role, Pageable pageable);
+    Page<Admin> findAllByKeywordAndFilter(@Param("keyword") String keyword, @Param("state") AdminState state, @Param("role") AdminRole role, Pageable pageable);
 
     @Query("""
     SELECT a FROM Admin a
