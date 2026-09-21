@@ -39,8 +39,8 @@ public class Product extends BaseEntity {
     @JoinColumn(name = "admin_id")
     private Admin admin;
 
-    public Product(String name, String category, int stock, int price, Admin admin) {
-        if (stock < 1) {
+    public Product(String name, String category, int stock, int price, ProductState state, Admin admin) {
+        if (stock < 0) {
             throw new BusinessException(ResponseCode.PRODUCT_INVALID_STOCK);
         }
         if (price < 0) {
@@ -50,9 +50,7 @@ public class Product extends BaseEntity {
         this.category = category;
         this.stock = stock;
         this.price = price;
+        this.state = state;
         this.admin = admin;
-        this.state = ProductState.ON_SALE;
     }
-
-
 }

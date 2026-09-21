@@ -183,6 +183,13 @@ public class AdminService {
         admin.updatePw(passwordHashed);
     }
 
+    // product에서 관리자 가져오기
+    public Admin getOperationAdmin(Long adminId) {
+        return adminRepository.findById(adminId).orElseThrow(
+                () -> new BusinessException(ResponseCode.ADMIN_NOT_FOUND)
+        );
+    }
+
     // 공통메서드
     private Admin getAdminById(Long adminId) {
         return adminRepository.findByIdNotDeleted(adminId).orElseThrow(
