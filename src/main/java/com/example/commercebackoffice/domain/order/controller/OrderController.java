@@ -5,6 +5,7 @@ import com.example.commercebackoffice.common.global.ResponseCode;
 import com.example.commercebackoffice.domain.auth.dto.SessionAdmin;
 import com.example.commercebackoffice.domain.order.dto.CreateOrderRequest;
 import com.example.commercebackoffice.domain.order.dto.CreateOrderResponse;
+import com.example.commercebackoffice.domain.order.dto.GetOrderResponse;
 import com.example.commercebackoffice.domain.order.dto.GetOrdersResponse;
 import com.example.commercebackoffice.domain.order.enums.OrderState;
 import com.example.commercebackoffice.domain.order.service.OrderService;
@@ -43,6 +44,12 @@ public class OrderController {
             @PageableDefault(page = 1, size = 10, sort = "createdAt", direction = Sort.Direction.ASC)Pageable pageable
             ) {
         return ResponseEntity.ok(ApiResponse.success(ResponseCode.OK, orderService.findAll(keyword, state, pageable)));
+    }
+
+    // 주문 상세 조회
+    @GetMapping("/{orderId}")
+    public ResponseEntity<ApiResponse<GetOrderResponse>> getOne(@PathVariable Long orderId) {
+        return ResponseEntity.ok(ApiResponse.success(ResponseCode.OK, orderService.findOne(orderId)));
     }
 
 }

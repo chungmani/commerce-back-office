@@ -8,6 +8,7 @@ import com.example.commercebackoffice.domain.customer.entity.Customer;
 import com.example.commercebackoffice.domain.customer.service.CustomerService;
 import com.example.commercebackoffice.domain.order.dto.CreateOrderRequest;
 import com.example.commercebackoffice.domain.order.dto.CreateOrderResponse;
+import com.example.commercebackoffice.domain.order.dto.GetOrderResponse;
 import com.example.commercebackoffice.domain.order.dto.GetOrdersResponse;
 import com.example.commercebackoffice.domain.order.entity.Order;
 import com.example.commercebackoffice.domain.order.enums.OrderState;
@@ -67,6 +68,12 @@ public class OrderService {
 
         Page<Order> orders = orderRepository.findAllByKeywordAndState(keyword, state, pageable);
         return orders.map(GetOrdersResponse::from);
+    }
+
+    // 주문 상세 조회
+    public GetOrderResponse findOne(Long orderId) {
+        Order order = getOrderById(orderId);
+        return GetOrderResponse.from(order);
     }
 
     // 주문 가져오는 공통 메서드
