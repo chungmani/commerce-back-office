@@ -8,12 +8,17 @@ import com.example.commercebackoffice.domain.customer.entity.Customer;
 import com.example.commercebackoffice.domain.customer.service.CustomerService;
 import com.example.commercebackoffice.domain.order.dto.CreateOrderRequest;
 import com.example.commercebackoffice.domain.order.dto.CreateOrderResponse;
+import com.example.commercebackoffice.domain.order.dto.GetOrdersResponse;
 import com.example.commercebackoffice.domain.order.entity.Order;
+import com.example.commercebackoffice.domain.order.enums.OrderState;
 import com.example.commercebackoffice.domain.order.repository.OrderRepository;
 import com.example.commercebackoffice.domain.product.entity.Product;
 import com.example.commercebackoffice.domain.product.enums.ProductState;
 import com.example.commercebackoffice.domain.product.service.ProductService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -53,10 +58,22 @@ public class OrderService {
         return "ORDER-" + UUID.randomUUID().toString().substring(0, 12);
     }
 
+    // 주문 전체 조회
+    public Page<GetOrdersResponse> findAll(String keyword, OrderState state, Pageable pageable) {
+        if (pageable.getPageNumber() < 1) {
+            throw new BusinessException(ResponseCode.BAD_REQUEST);
+        }
+        pageable = PageRequest.of(pageable.getPageNumber() - 1, pageable.getPageSize(), pageable.getSort());
+
+        Page<Order> orders = orderRepository.findAllByKeywordAndState(keyword, state, pageable);
+        return orders.map(GetOrdersResponse::from);
+    }
+
     // 주문 가져오는 공통 메서드
     private Order getOrderById(Long orderId) {
         return orderRepository.findById(orderId).orElseThrow(
                 () -> new BusinessException(ResponseCode.ORDER_NOT_FOUND)
         );
     }
+
 }
