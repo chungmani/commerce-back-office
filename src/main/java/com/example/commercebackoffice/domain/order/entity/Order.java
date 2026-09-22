@@ -64,4 +64,18 @@ public class Order extends BaseEntity {
         this.state = OrderState.PREPARING;
         this.orderNumber = orderNumber;
     }
+
+    // 상태 변경 순서: 준비중 → 배송중 → 배송완료
+    public void changeOrderState(OrderState state) {
+        if (state == OrderState.SHIPPING && this.state == OrderState.PREPARING) {
+            this.state = OrderState.SHIPPING;
+            return;
+        }
+        if (state == OrderState.DELIVERED && this.state == OrderState.SHIPPING) {
+            this.state = OrderState.DELIVERED;
+        }
+
+        throw new BusinessException(ResponseCode.NOT_ALLOWED_CHANGE_ORDER_STATE);
+    }
+    // 주문 취소는 준비중 상태에서만 허용합니다. (배송중/배송완료는 취소 불가)
 }

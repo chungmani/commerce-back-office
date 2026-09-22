@@ -39,7 +39,8 @@ public enum ResponseCode {
     // order
     ORDER_INVALID_QUANTITY(HttpStatus.BAD_REQUEST, "ORDER_01", "수량은 1이상이어야 합니다."),
     ORDER_NOT_FOUND(HttpStatus.NOT_FOUND, "ORDER_02", "해당 주문을 찾을 수 없습니다."),
-    INVALID_ORDER(HttpStatus.CONFLICT, "ORDER_03", "주문이 불가합니다.");
+    INVALID_ORDER(HttpStatus.CONFLICT, "ORDER_03", "주문이 불가합니다."),
+    NOT_ALLOWED_CHANGE_ORDER_STATE(HttpStatus.BAD_REQUEST, "ORDER_04", "변경할 수 없는 주문건입니다.");
 
 
     private final HttpStatus status;

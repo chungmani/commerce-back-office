@@ -6,10 +6,7 @@ import com.example.commercebackoffice.domain.admin.entity.Admin;
 import com.example.commercebackoffice.domain.admin.service.AdminService;
 import com.example.commercebackoffice.domain.customer.entity.Customer;
 import com.example.commercebackoffice.domain.customer.service.CustomerService;
-import com.example.commercebackoffice.domain.order.dto.CreateOrderRequest;
-import com.example.commercebackoffice.domain.order.dto.CreateOrderResponse;
-import com.example.commercebackoffice.domain.order.dto.GetOrderResponse;
-import com.example.commercebackoffice.domain.order.dto.GetOrdersResponse;
+import com.example.commercebackoffice.domain.order.dto.*;
 import com.example.commercebackoffice.domain.order.entity.Order;
 import com.example.commercebackoffice.domain.order.enums.OrderState;
 import com.example.commercebackoffice.domain.order.repository.OrderRepository;
@@ -74,6 +71,14 @@ public class OrderService {
     public GetOrderResponse findOne(Long orderId) {
         Order order = getOrderById(orderId);
         return GetOrderResponse.from(order);
+    }
+
+    // 주문 상태 변경
+    @Transactional
+    public ChangeOrderStateResponse change(Long orderId, ChangeOrderStateRequest request) {
+        Order order = getOrderById(orderId);
+        order.changeOrderState(request.state());
+        return ChangeOrderStateResponse.from(order);
     }
 
     // 주문 가져오는 공통 메서드

@@ -3,10 +3,7 @@ package com.example.commercebackoffice.domain.order.controller;
 import com.example.commercebackoffice.common.global.ApiResponse;
 import com.example.commercebackoffice.common.global.ResponseCode;
 import com.example.commercebackoffice.domain.auth.dto.SessionAdmin;
-import com.example.commercebackoffice.domain.order.dto.CreateOrderRequest;
-import com.example.commercebackoffice.domain.order.dto.CreateOrderResponse;
-import com.example.commercebackoffice.domain.order.dto.GetOrderResponse;
-import com.example.commercebackoffice.domain.order.dto.GetOrdersResponse;
+import com.example.commercebackoffice.domain.order.dto.*;
 import com.example.commercebackoffice.domain.order.enums.OrderState;
 import com.example.commercebackoffice.domain.order.service.OrderService;
 import jakarta.validation.Valid;
@@ -50,6 +47,15 @@ public class OrderController {
     @GetMapping("/{orderId}")
     public ResponseEntity<ApiResponse<GetOrderResponse>> getOne(@PathVariable Long orderId) {
         return ResponseEntity.ok(ApiResponse.success(ResponseCode.OK, orderService.findOne(orderId)));
+    }
+
+    // 주문 상태 변경
+    @PatchMapping("/{orderId}")
+    public ResponseEntity<ApiResponse<ChangeOrderStateResponse>> change(
+            @PathVariable Long orderId,
+            @Valid @RequestBody ChangeOrderStateRequest request
+    ) {
+        return ResponseEntity.ok(ApiResponse.success(ResponseCode.OK, orderService.change(orderId, request)));
     }
 
 }
