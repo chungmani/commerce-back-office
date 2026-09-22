@@ -66,7 +66,7 @@ public class CustomerService {
     }
 
     // 공통 메서드
-    private Customer getCustomerById(Long customerId) {
+    public Customer getCustomerById(Long customerId) {
         return customerRepository.findByIdNotDeleted(customerId).orElseThrow(
                 () -> new BusinessException(ResponseCode.CUSTOMER_NOT_FOUND)
         );

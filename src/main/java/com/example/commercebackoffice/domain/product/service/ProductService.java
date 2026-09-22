@@ -27,7 +27,7 @@ public class ProductService {
     // 상품 등록
     @Transactional
     public CreateProductResponse create(CreateProductRequest request, Long adminId) {
-        Admin admin = adminService.getOperationAdmin(adminId);
+        Admin admin = adminService.getAdmin(adminId);
 
         Product product = new Product(
                 request.name(), request.category(), request.stock(),
@@ -104,7 +104,7 @@ public class ProductService {
 
 
     // 상품 조회 공통 메서드
-    private Product getProductById (Long productId) {
+    public Product getProductById (Long productId) {
         return productRepository.findById(productId).orElseThrow(
                 () -> new BusinessException(ResponseCode.PRODUCT_NOT_FOUND)
         );

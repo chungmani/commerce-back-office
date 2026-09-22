@@ -51,7 +51,7 @@ public class Order extends BaseEntity {
     @JoinColumn(name = "admin_id")
     private Admin admin;
 
-    public Order(Customer customer, Product product, int quantity, Admin admin) {
+    public Order(Customer customer, Product product, int quantity, Admin admin, String orderNumber) {
         if (quantity < 1) {
             throw new BusinessException(ResponseCode.ORDER_INVALID_QUANTITY);
         }
@@ -62,5 +62,6 @@ public class Order extends BaseEntity {
         this.product = product;
         this.admin = admin;
         this.state = OrderState.PREPARING;
+        this.orderNumber = orderNumber;
     }
 }
