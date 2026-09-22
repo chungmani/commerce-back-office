@@ -77,5 +77,13 @@ public class Order extends BaseEntity {
 
         throw new BusinessException(ResponseCode.NOT_ALLOWED_CHANGE_ORDER_STATE);
     }
+
     // 주문 취소는 준비중 상태에서만 허용합니다. (배송중/배송완료는 취소 불가)
+    public void cancelOrder(String cancelReason) {
+        if (this.state != OrderState.PREPARING) {
+            throw new BusinessException(ResponseCode.NOT_ALLOWED_CHANGE_ORDER_STATE);
+        }
+        this.state = OrderState.CANCELED;
+        this.cancelReason = cancelReason;
+    }
 }

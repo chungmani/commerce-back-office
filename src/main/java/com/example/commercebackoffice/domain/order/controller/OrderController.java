@@ -58,4 +58,14 @@ public class OrderController {
         return ResponseEntity.ok(ApiResponse.success(ResponseCode.OK, orderService.change(orderId, request)));
     }
 
+    // 주문 취소
+    @PatchMapping("/{orderId}/cancel")
+    public ResponseEntity<ApiResponse<CancelOrderResponse>> cancel(
+            @PathVariable Long orderId,
+            @Valid @RequestBody CancelOrderRequest request
+    ) {
+        return ResponseEntity.ok(ApiResponse.success(ResponseCode.OK, orderService.cancel(orderId, request)));
+    }
+
+
 }

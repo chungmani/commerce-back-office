@@ -13,6 +13,7 @@ import com.example.commercebackoffice.domain.order.repository.OrderRepository;
 import com.example.commercebackoffice.domain.product.entity.Product;
 import com.example.commercebackoffice.domain.product.enums.ProductState;
 import com.example.commercebackoffice.domain.product.service.ProductService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -79,6 +80,14 @@ public class OrderService {
         Order order = getOrderById(orderId);
         order.changeOrderState(request.state());
         return ChangeOrderStateResponse.from(order);
+    }
+
+    // 주문 취소
+    @Transactional
+    public CancelOrderResponse cancel(Long orderId, CancelOrderRequest request) {
+        Order order = getOrderById(orderId);
+        order.cancelOrder(request.cancelReason());
+        return CancelOrderResponse.from(order);
     }
 
     // 주문 가져오는 공통 메서드
