@@ -102,6 +102,12 @@ public class ProductService {
         }
     }
 
+    // 재고 복구 메서드
+    public void restoreStock(Long productId, int quantity) {
+        Product product = getProductById(productId);
+        product.restoreStock(quantity);
+    }
+
 
     // 상품 조회 공통 메서드
     public Product getProductById (Long productId) {

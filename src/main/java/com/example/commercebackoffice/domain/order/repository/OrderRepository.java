@@ -1,5 +1,6 @@
 package com.example.commercebackoffice.domain.order.repository;
 
+import com.example.commercebackoffice.domain.order.dto.CustomerOrderSummary;
 import com.example.commercebackoffice.domain.order.entity.Order;
 import com.example.commercebackoffice.domain.order.enums.OrderState;
 import org.springframework.data.domain.Page;
@@ -7,6 +8,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+
+import java.util.List;
 
 public interface OrderRepository extends JpaRepository<Order, Long> {
 
@@ -16,4 +19,15 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
             AND (:state IS NULL OR o.state = :state) 
     """)
     Page<Order> findAllByKeywordAndState(@Param("keyword") String keyword, @Param("state") OrderState state, Pageable pageable);
+
+    long countByCustomer_id(Long customerId);
+
+    @Query("SELECT SUM(o.productPrice * o.quantity) FROM Order o WHERE o.customer.id =:customerId")
+    long totalPriceByCustomer_Id(@Param("customerId") Long customerId);
+
+    @Query("""
+    SELECT o.customer.id, COUNT(o), SUM(o.productPrice * o.quantity) FROM Order o
+        GROUP BY o.customer.id
+    """)
+    List<CustomerOrderSummary> getCustomerOrderSummary();
 }

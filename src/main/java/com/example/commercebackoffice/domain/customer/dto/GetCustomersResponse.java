@@ -11,13 +11,17 @@ public record GetCustomersResponse(
         String email,
         String phoneNumber,
         CustomerState state,
-        LocalDateTime createdAt
+        LocalDateTime createdAt,
+        long totalOrderCount,
+        long totalOrderPrice
+
 ) {
-    public static GetCustomersResponse from(Customer customer) {
+    public static GetCustomersResponse from(Customer customer, long totalOrderCount, long totalOrderPrice) {
         return new GetCustomersResponse(
                 customer.getId(), customer.getName(),
                 customer.getEmail(), customer.getPhoneNumber(),
-                customer.getState(), customer.getCreatedAt()
+                customer.getState(), customer.getCreatedAt(),
+                totalOrderCount, totalOrderPrice
         );
     }
 }

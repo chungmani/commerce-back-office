@@ -6,7 +6,8 @@ import com.example.commercebackoffice.domain.customer.dto.*;
 import com.example.commercebackoffice.domain.customer.entity.Customer;
 import com.example.commercebackoffice.domain.customer.enums.CustomerState;
 import com.example.commercebackoffice.domain.customer.repository.CustomerRepository;
-import jakarta.validation.Valid;
+import com.example.commercebackoffice.domain.order.dto.CustomerOrderSummary;
+import com.example.commercebackoffice.domain.order.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -14,12 +15,18 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class CustomerService {
 
     private final CustomerRepository customerRepository;
+    private final OrderService orderService;
 
     // 고객 전체 조회
     public Page<GetCustomersResponse> findAll(String keyword, CustomerState state, Pageable pageable) {
@@ -29,7 +36,21 @@ public class CustomerService {
         pageable = PageRequest.of(pageable.getPageNumber() - 1, pageable.getPageSize(), pageable.getSort());
 
         Page<Customer> customers = customerRepository.findAllByKeywordAndFilter(keyword, state, pageable);
-        return customers.map(GetCustomersResponse::from);
+
+        List<CustomerOrderSummary> summaries  = orderService.getSummary();
+        Map<Long, CustomerOrderSummary> summaryMap = summaries.stream()
+                .collect(Collectors.toMap(
+                        customerOrderSummary -> customerOrderSummary.customerId(),
+                        Function.identity()
+                ));
+
+        return customers.map(customer -> {
+            CustomerOrderSummary summary = summaryMap.get(customer.getId());
+            if (summary == null) {
+                return GetCustomersResponse.from(customer, 0, 0);
+            }
+            return GetCustomersResponse.from(customer, summary.totalOrderCount(), summary.totalOrderPrice());
+        });
     }
 
     // 고객 상세 조회

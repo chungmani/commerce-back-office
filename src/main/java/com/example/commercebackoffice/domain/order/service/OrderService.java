@@ -13,7 +13,6 @@ import com.example.commercebackoffice.domain.order.repository.OrderRepository;
 import com.example.commercebackoffice.domain.product.entity.Product;
 import com.example.commercebackoffice.domain.product.enums.ProductState;
 import com.example.commercebackoffice.domain.product.service.ProductService;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -21,6 +20,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -87,7 +87,23 @@ public class OrderService {
     public CancelOrderResponse cancel(Long orderId, CancelOrderRequest request) {
         Order order = getOrderById(orderId);
         order.cancelOrder(request.cancelReason());
+        productService.restoreStock(order.getProduct().getId(), order.getQuantity());
         return CancelOrderResponse.from(order);
+    }
+
+    // 고객의 주문 총 주문 가져오기
+    public long customerCountOrder(Long customerId) {
+        return orderRepository.countByCustomer_id(customerId);
+    }
+
+    // 고객의 주문 총 금액 가져오기
+    public long customerTotalPrice(Long customerId) {
+        return orderRepository.totalPriceByCustomer_Id(customerId);
+    }
+
+    // 고객의 총 주문 + 총금액 가져오기
+    public List<CustomerOrderSummary> getSummary() {
+        return orderRepository.getCustomerOrderSummary();
     }
 
     // 주문 가져오는 공통 메서드
