@@ -64,11 +64,17 @@ public class Product extends BaseEntity {
         this.price = price;
     }
 
+    // 재고 차감
     public void decreaseStock(int quantity) {
         if (quantity <= 0) {
             throw new BusinessException(ResponseCode.PRODUCT_INVALID_STOCK_QUANTITY);
         }
         this.stock -= quantity;
+    }
+
+    // 재고 복구
+    public void restoreStock(int quantity) {
+        this.stock += quantity;
     }
 
     public void changeProductState(ProductState state) {

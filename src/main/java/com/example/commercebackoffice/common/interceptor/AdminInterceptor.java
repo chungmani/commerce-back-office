@@ -36,8 +36,14 @@ public class AdminInterceptor implements HandlerInterceptor {
             return true;
         }
 
-        // 2-1 OperationAdmin 접근가능한곳
+        // 2-1 product 접근 가능한 관리자
         if (antPathMatcher.match("/products/**", request.getRequestURI()) && sessionAdmin.role() == AdminRole.OPERATION_ADMIN) {
+            return true;
+        }
+
+        // 2-2 order 접근 가능한 관리자
+        if (antPathMatcher.match("/orders/**", request.getRequestURI())
+                && (sessionAdmin.role() == AdminRole.CS_ADMIN || sessionAdmin.role() == AdminRole.OPERATION_ADMIN)) {
             return true;
         }
 
