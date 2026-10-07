@@ -27,7 +27,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
     @Query("""
     SELECT o.customer.id, COUNT(o), SUM(o.productPrice * o.quantity) FROM Order o
-        GROUP BY o.customer.id
+    GROUP BY o.customer.id
     """)
     List<CustomerOrderSummary> getCustomerOrderSummary();
 }

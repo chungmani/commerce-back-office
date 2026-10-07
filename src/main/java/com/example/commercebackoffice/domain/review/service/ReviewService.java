@@ -2,8 +2,7 @@ package com.example.commercebackoffice.domain.review.service;
 
 import com.example.commercebackoffice.common.exception.BusinessException;
 import com.example.commercebackoffice.common.global.ResponseCode;
-import com.example.commercebackoffice.domain.review.dto.GetReviewResponse;
-import com.example.commercebackoffice.domain.review.dto.GetReviewsResponse;
+import com.example.commercebackoffice.domain.review.dto.*;
 import com.example.commercebackoffice.domain.review.entity.Review;
 import com.example.commercebackoffice.domain.review.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +11,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -43,6 +46,43 @@ public class ReviewService {
     public void delete(Long reviewId) {
         Review review = getReview(reviewId);
         reviewRepository.delete(review);
+    }
+
+    // 리뷰 통계
+    public ReviewSummaryResponse reviewSummaryResponse(Long productId) {
+        // productId가 같은 리뷰의 평균 평점
+        double reviewAverage = reviewRepository.findByProduct_IdReviewAverage(productId);
+
+        // productId의 전체 리뷰 개수
+        long reviewCount = reviewRepository.findByProduct_IdReviewCount(productId);
+
+        // productId의 평점별 개수
+        List<RatingCount> ratingCountList = reviewRepository.findByProduct_IdRatingSummary(productId);
+        Map<Integer, Long> ratingCountMap = ratingCountList.stream()
+                .collect(Collectors.toMap(
+                        ratingCount -> ratingCount.getRating(),
+                        ratingCount -> ratingCount.getCount()
+                ));
+
+        RatingSummary ratingSummary = new RatingSummary(
+                ratingCountMap.getOrDefault(5, 0L),
+                ratingCountMap.getOrDefault(4, 0L),
+                ratingCountMap.getOrDefault(3, 0L),
+                ratingCountMap.getOrDefault(2, 0L),
+                ratingCountMap.getOrDefault(1, 0L)
+        );
+
+        return ReviewSummaryResponse.from(reviewAverage, reviewCount, ratingSummary);
+    }
+
+    // 최근 리뷰 목록
+    public List<LatestReviewResponse> latestReviewResponses(Long productId) {
+        Pageable pageable = PageRequest.ofSize(3);
+        List<Review> reviews = reviewRepository.findReviewByCreatedAt(productId, pageable);
+
+        return reviews.stream()
+                .map(LatestReviewResponse::from)
+                .toList();
     }
 
     // 공통 메서드
