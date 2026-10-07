@@ -35,4 +35,11 @@ public class ReviewController {
     public ResponseEntity<ApiResponse<GetReviewResponse>> getOne(@PathVariable Long reviewId) {
         return ResponseEntity.ok(ApiResponse.success(ResponseCode.OK, reviewService.findOne(reviewId)));
     }
+
+    // 리뷰 삭제
+    @DeleteMapping("/{reviewId}")
+    public ResponseEntity<Void> delete(@PathVariable Long reviewId) {
+        reviewService.delete(reviewId);
+        return ResponseEntity.noContent().build();
+    }
 }

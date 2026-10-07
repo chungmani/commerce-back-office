@@ -34,10 +34,21 @@ public class ReviewService {
 
     // 리뷰 상세 조회
     public GetReviewResponse findOne(Long reviewId) {
-        Review review = reviewRepository.findById(reviewId).orElseThrow(
+        Review review = getReview(reviewId);
+        return GetReviewResponse.from(review);
+    }
+
+    // 리뷰 삭제
+    @Transactional
+    public void delete(Long reviewId) {
+        Review review = getReview(reviewId);
+        reviewRepository.delete(review);
+    }
+
+    // 공통 메서드
+    private Review getReview(Long reviewId) {
+        return reviewRepository.findById(reviewId).orElseThrow(
                 () -> new BusinessException(ResponseCode.REVIEW_NOT_FOUND)
         );
-
-        return GetReviewResponse.from(review);
     }
 }
