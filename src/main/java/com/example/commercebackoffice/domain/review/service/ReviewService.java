@@ -2,6 +2,7 @@ package com.example.commercebackoffice.domain.review.service;
 
 import com.example.commercebackoffice.common.exception.BusinessException;
 import com.example.commercebackoffice.common.global.ResponseCode;
+import com.example.commercebackoffice.domain.review.dto.GetReviewResponse;
 import com.example.commercebackoffice.domain.review.dto.GetReviewsResponse;
 import com.example.commercebackoffice.domain.review.entity.Review;
 import com.example.commercebackoffice.domain.review.repository.ReviewRepository;
@@ -29,5 +30,14 @@ public class ReviewService {
         Page<Review> reviews = reviewRepository.findAllByKeywordAndRating(keyword, rating, pageable);
 
         return reviews.map(GetReviewsResponse::from);
+    }
+
+    // 리뷰 상세 조회
+    public GetReviewResponse findOne(Long reviewId) {
+        Review review = reviewRepository.findById(reviewId).orElseThrow(
+                () -> new BusinessException(ResponseCode.REVIEW_NOT_FOUND)
+        );
+
+        return GetReviewResponse.from(review);
     }
 }

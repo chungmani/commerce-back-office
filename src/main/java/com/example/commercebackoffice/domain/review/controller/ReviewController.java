@@ -2,6 +2,7 @@ package com.example.commercebackoffice.domain.review.controller;
 
 import com.example.commercebackoffice.common.global.ApiResponse;
 import com.example.commercebackoffice.common.global.ResponseCode;
+import com.example.commercebackoffice.domain.review.dto.GetReviewResponse;
 import com.example.commercebackoffice.domain.review.dto.GetReviewsResponse;
 import com.example.commercebackoffice.domain.review.service.ReviewService;
 import lombok.RequiredArgsConstructor;
@@ -10,10 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -30,5 +28,11 @@ public class ReviewController {
             @PageableDefault(page = 1, size = 10, sort = "rating", direction = Sort.Direction.ASC)Pageable pageable
             ) {
         return ResponseEntity.ok(ApiResponse.success(ResponseCode.OK, reviewService.findAll(keyword, rating, pageable)));
+    }
+
+    // 리뷰 상세 조회
+    @GetMapping("/{reviewId}")
+    public ResponseEntity<ApiResponse<GetReviewResponse>> getOne(@PathVariable Long reviewId) {
+        return ResponseEntity.ok(ApiResponse.success(ResponseCode.OK, reviewService.findOne(reviewId)));
     }
 }
