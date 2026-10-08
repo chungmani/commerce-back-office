@@ -52,6 +52,7 @@ public class ReviewService {
     public ReviewSummaryResponse reviewSummaryResponse(Long productId) {
         // productId가 같은 리뷰의 평균 평점
         double reviewAverage = reviewRepository.findByProduct_IdReviewAverage(productId);
+        reviewAverage = Math.round(reviewAverage * 10) / 10.0;
 
         // productId의 전체 리뷰 개수
         long reviewCount = reviewRepository.findByProduct_IdReviewCount(productId);
@@ -90,5 +91,15 @@ public class ReviewService {
         return reviewRepository.findById(reviewId).orElseThrow(
                 () -> new BusinessException(ResponseCode.REVIEW_NOT_FOUND)
         );
+    }
+
+    // 전체 리뷰 수 조회
+    public long countAll() {
+        return reviewRepository.countAll();
+    }
+
+    // 평균 평점
+    public double averageRating() {
+        return reviewRepository.averageRating();
     }
 }

@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface OrderRepository extends JpaRepository<Order, Long> {
@@ -30,4 +31,10 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     GROUP BY o.customer.id
     """)
     List<CustomerOrderSummary> getCustomerOrderSummary();
+
+    @Query("SELECT COUNT(o) FROM Order o")
+    long countAll();
+
+    @Query("SELECT COUNT(o) FROM Order o WHERE o.createdAt >= :start AND o.createdAt < :end")
+    long todayOrderCount(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
 }

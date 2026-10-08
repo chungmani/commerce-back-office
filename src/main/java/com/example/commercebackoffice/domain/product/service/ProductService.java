@@ -125,5 +125,13 @@ public class ProductService {
         );
     }
 
+    // 상품 전체 수 조회
+    public long countAll() {
+        return productRepository.countAll();
+    }
 
+    // 재고 부족 상품 조회(5개 이하)
+    public long lowStockCount() {
+        return productRepository.lowStockCount();
+    }
 }

@@ -45,4 +45,10 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     WHERE r.order.product.id = :productId ORDER BY r.createdAt DESC
     """)
     List<Review> findReviewByCreatedAt(@Param("productId") Long productId, Pageable pageable);
+
+    @Query("SELECT COUNT(r) FROM Review r")
+    long countAll();
+
+    @Query("SELECT COALESCE(AVG(r.rating), 0.0) FROM Review r")
+    double averageRating();
 }

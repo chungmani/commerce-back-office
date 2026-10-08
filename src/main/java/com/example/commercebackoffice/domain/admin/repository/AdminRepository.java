@@ -32,4 +32,10 @@ public interface AdminRepository extends JpaRepository<Admin, Long> {
 
     @Query("SELECT a FROM Admin a WHERE a.id = :adminId AND a.deletedAt IS NULL")
     Optional<Admin> findByIdNotDeleted(@Param("adminId") Long adminId);
+
+    @Query("SELECT COUNT(a) FROM Admin a")
+    long countAll();
+
+    @Query("SELECT COUNT(a) FROM Admin a WHERE a.state = AdminState.ACTIVE")
+    long countActiveAdmin();
 }

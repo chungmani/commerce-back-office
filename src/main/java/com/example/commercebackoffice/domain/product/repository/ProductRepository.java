@@ -18,4 +18,10 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     Page<Product> findAllByKeywordAndFilter(
             @Param("keyword") String keyword, @Param("category") String category,
             @Param("state") ProductState state, Pageable pageable);
+
+    @Query("SELECT COUNT(p) FROM Product p")
+    long countAll();
+
+    @Query("SELECT COUNT(p) FROM Product p WHERE p.stock <= 5")
+    long lowStockCount();
 }

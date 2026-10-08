@@ -197,5 +197,13 @@ public class AdminService {
         );
     }
 
+    // 관리자 전체 조회
+    public long countAll() {
+        return adminRepository.countAll();
+    }
 
+    // 활성 관리자 조회
+    public long countActive() {
+        return adminRepository.countActiveAdmin();
+    }
 }
