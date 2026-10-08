@@ -102,4 +102,21 @@ public class CustomerService {
     public long countActive() {
         return customerRepository.countActiveCustomer();
     }
+
+    // 상태별 고객 수 조회
+    public CustomerStateChart customerStateChart() {
+        List<CustomerStateCount> stateCounts = customerRepository.countCustomerState();
+
+        Map<CustomerState, Long> customerStateLongMap = stateCounts.stream()
+                .collect(Collectors.toMap(
+                        customerStateCount -> customerStateCount.getState(),
+                        customerStateCount -> customerStateCount.getCount()
+                ));
+
+        return new CustomerStateChart(
+                customerStateLongMap.getOrDefault(CustomerState.ACTIVE, 0L),
+                customerStateLongMap.getOrDefault(CustomerState.INACTIVE, 0L),
+                customerStateLongMap.getOrDefault(CustomerState.SUSPENDED, 0L)
+        );
+    }
 }

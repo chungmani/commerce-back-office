@@ -6,6 +6,7 @@ import com.example.commercebackoffice.domain.admin.entity.Admin;
 import com.example.commercebackoffice.domain.admin.service.AdminService;
 import com.example.commercebackoffice.domain.customer.entity.Customer;
 import com.example.commercebackoffice.domain.customer.service.CustomerService;
+import com.example.commercebackoffice.domain.dashboard.dto.LatestOrderList;
 import com.example.commercebackoffice.domain.order.dto.*;
 import com.example.commercebackoffice.domain.order.entity.Order;
 import com.example.commercebackoffice.domain.order.enums.OrderState;
@@ -125,5 +126,42 @@ public class OrderService {
         LocalDateTime start = LocalDate.now().atStartOfDay();
         LocalDateTime end = start.plusDays(1);
         return orderRepository.todayOrderCount(start, end);
+    }
+
+    // 총 매출
+    public long totalOrderPrice() {
+        return orderRepository.totalOrderPrice();
+    }
+
+    // 오늘 매출
+    public long todayOrderPrice() {
+        LocalDateTime start = LocalDate.now().atStartOfDay();
+        LocalDateTime end = start.plusDays(1);
+        return orderRepository.todayOrderPrice(start, end);
+    }
+
+    // 준비중 주문수
+    public long preparingOrder() {
+        return orderRepository.preparingOrder();
+    }
+
+    // 배송중 주문수
+    public long shippingOrder() {
+        return orderRepository.shippingOrder();
+    }
+
+    // 배송완료 주문수
+    public long deliveredOrder() {
+        return orderRepository.deliveredOrder();
+    }
+
+    // 최근 주문 목록 10개 조회
+    public List<LatestOrderList> getLatestOrderList() {
+        Pageable pageable = PageRequest.ofSize(10);
+        List<Order> orders = orderRepository.findLatestOrder(pageable);
+
+        return orders.stream().map(
+                LatestOrderList::from
+        ).toList();
     }
 }

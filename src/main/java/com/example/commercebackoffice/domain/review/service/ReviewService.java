@@ -102,4 +102,22 @@ public class ReviewService {
     public double averageRating() {
         return reviewRepository.averageRating();
     }
+
+    // 별점별 개수
+    public RatingSummary ratingSummary() {
+        List<RatingCount> ratingCountList = reviewRepository.countALlByRating();
+        Map<Integer, Long> ratingCountMap = ratingCountList.stream()
+                .collect(Collectors.toMap(
+                        ratingCount -> ratingCount.getRating(),
+                        ratingCount -> ratingCount.getCount()
+                ));
+
+        return  new RatingSummary(
+                ratingCountMap.getOrDefault(5, 0L),
+                ratingCountMap.getOrDefault(4, 0L),
+                ratingCountMap.getOrDefault(3, 0L),
+                ratingCountMap.getOrDefault(2, 0L),
+                ratingCountMap.getOrDefault(1, 0L)
+        );
+    }
 }

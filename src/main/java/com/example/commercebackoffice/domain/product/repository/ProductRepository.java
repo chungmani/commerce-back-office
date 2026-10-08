@@ -1,5 +1,6 @@
 package com.example.commercebackoffice.domain.product.repository;
 
+import com.example.commercebackoffice.domain.product.dto.CategoryProductCount;
 import com.example.commercebackoffice.domain.product.entity.Product;
 import com.example.commercebackoffice.domain.product.enums.ProductState;
 import org.springframework.data.domain.Page;
@@ -7,6 +8,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+
+import java.util.List;
 
 public interface ProductRepository extends JpaRepository<Product, Long> {
 
@@ -24,4 +27,13 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
     @Query("SELECT COUNT(p) FROM Product p WHERE p.stock <= 5")
     long lowStockCount();
+
+    @Query("SELECT COUNT(p) FROM Product p WHERE p.state = ProductState.SOLD_OUT")
+    long soldOutProduct();
+
+    @Query("""
+    SELECT new com.example.commercebackoffice.domain.product.dto.CategoryProductCount(p.category, COUNT(p))
+    FROM Product p GROUP BY p.category
+    """)
+    List<CategoryProductCount> countCategoryProduct();
 }

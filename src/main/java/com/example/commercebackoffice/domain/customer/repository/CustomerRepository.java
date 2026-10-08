@@ -1,5 +1,6 @@
 package com.example.commercebackoffice.domain.customer.repository;
 
+import com.example.commercebackoffice.domain.customer.dto.CustomerStateCount;
 import com.example.commercebackoffice.domain.customer.entity.Customer;
 import com.example.commercebackoffice.domain.customer.enums.CustomerState;
 import org.springframework.data.domain.Page;
@@ -8,6 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface CustomerRepository extends JpaRepository<Customer, Long> {
@@ -29,4 +31,10 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
 
     @Query("SELECT COUNT(c) FROM Customer c WHERE c.state = CustomerState.ACTIVE")
     long countActiveCustomer();
+
+    @Query("""
+    SELECT new com.example.commercebackoffice.domain.customer.dto.CustomerStateCount(c.state, COUNT(c))
+    FROM Customer c GROUP BY c.state
+    """)
+    List<CustomerStateCount> countCustomerState();
 }

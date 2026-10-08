@@ -37,4 +37,25 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
     @Query("SELECT COUNT(o) FROM Order o WHERE o.createdAt >= :start AND o.createdAt < :end")
     long todayOrderCount(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
+
+    @Query("SELECT COALESCE(SUM(o.productPrice * o.quantity), 0) FROM Order o WHERE o.state <> OrderState.CANCELED")
+    long totalOrderPrice();
+
+    @Query("""
+    SELECT COALESCE(SUM(o.productPrice * o.quantity), 0) FROM Order o 
+    WHERE o.state <> OrderState.CANCELED AND o.createdAt >= :start AND o.createdAt < :end
+    """)
+    long todayOrderPrice(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
+
+    @Query("SELECT COUNT(o) FROM Order o WHERE o.state = OrderState.PREPARING")
+    long preparingOrder();
+
+    @Query("SELECT COUNT(o) FROM Order o WHERE o.state = OrderState.SHIPPING")
+    long shippingOrder();
+
+    @Query("SELECT COUNT(o) FROM Order o WHERE o.state = OrderState.DELIVERED")
+    long deliveredOrder();
+
+    @Query("SELECT o FROM Order o ORDER BY o.createdAt DESC")
+    List<Order> findLatestOrder(Pageable pageable);
 }

@@ -51,4 +51,10 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 
     @Query("SELECT COALESCE(AVG(r.rating), 0.0) FROM Review r")
     double averageRating();
+
+    @Query("""
+    SELECT new com.example.commercebackoffice.domain.review.dto.RatingCount(r.rating, COUNT(r)) FROM Review r
+    GROUP BY r.rating
+    """)
+    List<RatingCount> countALlByRating();
 }
