@@ -134,4 +134,9 @@ public class ProductService {
     public long lowStockCount() {
         return productRepository.lowStockCount();
     }
+
+    // 품절 상품 수
+    public long soldOutProduct() {
+        return productRepository.soldOutProduct();
+    }
 }

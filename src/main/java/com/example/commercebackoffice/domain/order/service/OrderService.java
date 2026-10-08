@@ -126,4 +126,31 @@ public class OrderService {
         LocalDateTime end = start.plusDays(1);
         return orderRepository.todayOrderCount(start, end);
     }
+
+    // 총 매출
+    public long totalOrderPrice() {
+        return orderRepository.totalOrderPrice();
+    }
+
+    // 오늘 매출
+    public long todayOrderPrice() {
+        LocalDateTime start = LocalDate.now().atStartOfDay();
+        LocalDateTime end = start.plusDays(1);
+        return orderRepository.todayOrderPrice(start, end);
+    }
+
+    // 준비중 주문수
+    public long preparingOrder() {
+        return orderRepository.preparingOrder();
+    }
+
+    // 배송중 주문수
+    public long shippingOrder() {
+        return orderRepository.shippingOrder();
+    }
+
+    // 배송완료 주문수
+    public long deliveredOrder() {
+        return orderRepository.deliveredOrder();
+    }
 }

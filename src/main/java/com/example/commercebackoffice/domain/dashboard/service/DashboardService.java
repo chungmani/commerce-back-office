@@ -3,6 +3,7 @@ package com.example.commercebackoffice.domain.dashboard.service;
 import com.example.commercebackoffice.domain.admin.service.AdminService;
 import com.example.commercebackoffice.domain.customer.service.CustomerService;
 import com.example.commercebackoffice.domain.dashboard.dto.SummaryStatistics;
+import com.example.commercebackoffice.domain.dashboard.dto.WidgetsData;
 import com.example.commercebackoffice.domain.order.service.OrderService;
 import com.example.commercebackoffice.domain.product.service.ProductService;
 import com.example.commercebackoffice.domain.review.service.ReviewService;
@@ -12,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class DashboardService {
 
     private final AdminService adminService;
@@ -20,8 +22,8 @@ public class DashboardService {
     private final OrderService orderService;
     private final ReviewService reviewService;
 
+
     // Summary 통계
-    @Transactional(readOnly = true)
     public SummaryStatistics summaryStatistics() {
         // 전체 관리자 수
         long totalAdmin = adminService.countAll();
@@ -56,6 +58,34 @@ public class DashboardService {
 
         return new SummaryStatistics(totalAdmin, activeAdmin, totalCustomer, activeCustomer,
                 totalProduct, lowStock, totalOrder, todayOrder, totalReview, averageRating
+        );
+    }
+
+    // 위젯 데이터
+    public WidgetsData widgetsData() {
+        // 총 매출
+        long totalOrderPrice = orderService.totalOrderPrice();
+
+        // 오늘 매출
+        long todayOrderPrice = orderService.todayOrderPrice();
+
+        // 준비중 주문수
+        long preparingOrder = orderService.preparingOrder();
+
+        // 배송중 주문수
+        long shippingOrder = orderService.shippingOrder();
+
+        // 배송완료 주문수
+        long deliveredOrder = orderService.deliveredOrder();
+
+        // 재고부족 상품수
+        long lowStock = productService.lowStockCount();
+
+        // 재고 없음(품절) 상품수
+        long soldOutProduct = productService.soldOutProduct();
+
+        return new WidgetsData(totalOrderPrice, todayOrderPrice, preparingOrder,
+                shippingOrder, deliveredOrder, lowStock, soldOutProduct
         );
     }
 }

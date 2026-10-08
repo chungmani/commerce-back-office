@@ -24,4 +24,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
     @Query("SELECT COUNT(p) FROM Product p WHERE p.stock <= 5")
     long lowStockCount();
+
+    @Query("SELECT COUNT(p) FROM Product p WHERE p.state = ProductState.SOLD_OUT")
+    long soldOutProduct();
 }
