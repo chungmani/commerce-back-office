@@ -73,6 +73,7 @@ public class Order extends BaseEntity {
         }
         if (state == OrderState.DELIVERED && this.state == OrderState.SHIPPING) {
             this.state = OrderState.DELIVERED;
+            return;
         }
 
         throw new BusinessException(ResponseCode.NOT_ALLOWED_CHANGE_ORDER_STATE);

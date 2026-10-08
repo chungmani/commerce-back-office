@@ -7,7 +7,7 @@ public record LatestOrderList(
         String orderNumber,
         String customerName,
         String productName,
-        int productPrice,
+        int totalPrice,
         OrderState orderState
 ) {
     public static LatestOrderList from(Order order) {
@@ -15,7 +15,7 @@ public record LatestOrderList(
                 order.getOrderNumber(),
                 order.getCustomer().getName(),
                 order.getProductName(),
-                order.getProductPrice(),
+                order.getProductPrice() * order.getQuantity(),
                 order.getState()
         );
     }

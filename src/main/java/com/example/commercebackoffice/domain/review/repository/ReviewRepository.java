@@ -19,7 +19,7 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
         OR r.order.productName LIKE CONCAT('%', :keyword, '%')) AND
              (:rating IS NULL OR r.rating = :rating)
     """)
-    Page<Review> findAllByKeywordAndRating(@Param("keyowrd") String keyword, @Param("rating") Integer rating, Pageable pageable);
+    Page<Review> findAllByKeywordAndRating(@Param("keyword") String keyword, @Param("rating") Integer rating, Pageable pageable);
 
     @Query("""
     SELECT COALESCE(AVG(r.rating), 0.0) FROM Review r

@@ -3,10 +3,7 @@ package com.example.commercebackoffice.domain.dashboard.service;
 import com.example.commercebackoffice.domain.admin.service.AdminService;
 import com.example.commercebackoffice.domain.customer.dto.CustomerStateChart;
 import com.example.commercebackoffice.domain.customer.service.CustomerService;
-import com.example.commercebackoffice.domain.dashboard.dto.ChartsData;
-import com.example.commercebackoffice.domain.dashboard.dto.LatestOrderList;
-import com.example.commercebackoffice.domain.dashboard.dto.SummaryStatistics;
-import com.example.commercebackoffice.domain.dashboard.dto.WidgetsData;
+import com.example.commercebackoffice.domain.dashboard.dto.*;
 import com.example.commercebackoffice.domain.order.service.OrderService;
 import com.example.commercebackoffice.domain.product.dto.CategoryProductCount;
 import com.example.commercebackoffice.domain.product.service.ProductService;
@@ -113,5 +110,15 @@ public class DashboardService {
     // 최근 주문 목록
     public List<LatestOrderList> getLatestOrderList() {
         return orderService.getLatestOrderList();
+    }
+
+    // 대시보드 조회
+    public DashboardResponse getDashboard() {
+        return new DashboardResponse(
+                summaryStatistics(),
+                widgetsData(),
+                chartsData(),
+                getLatestOrderList()
+        );
     }
 }
