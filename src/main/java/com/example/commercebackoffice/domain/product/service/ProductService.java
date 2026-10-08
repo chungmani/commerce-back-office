@@ -11,7 +11,6 @@ import com.example.commercebackoffice.domain.product.repository.ProductRepositor
 import com.example.commercebackoffice.domain.review.dto.LatestReviewResponse;
 import com.example.commercebackoffice.domain.review.dto.ReviewSummaryResponse;
 import com.example.commercebackoffice.domain.review.service.ReviewService;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -20,6 +19,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -139,4 +140,10 @@ public class ProductService {
     public long soldOutProduct() {
         return productRepository.soldOutProduct();
     }
+
+    // 카테고리별 상품 수
+    public List<CategoryProductCount> categoryChart() {
+        return productRepository.countCategoryProduct();
+    }
 }
+

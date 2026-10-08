@@ -1,15 +1,21 @@
 package com.example.commercebackoffice.domain.dashboard.service;
 
 import com.example.commercebackoffice.domain.admin.service.AdminService;
+import com.example.commercebackoffice.domain.customer.dto.CustomerStateChart;
 import com.example.commercebackoffice.domain.customer.service.CustomerService;
+import com.example.commercebackoffice.domain.dashboard.dto.ChartsData;
 import com.example.commercebackoffice.domain.dashboard.dto.SummaryStatistics;
 import com.example.commercebackoffice.domain.dashboard.dto.WidgetsData;
 import com.example.commercebackoffice.domain.order.service.OrderService;
+import com.example.commercebackoffice.domain.product.dto.CategoryProductCount;
 import com.example.commercebackoffice.domain.product.service.ProductService;
+import com.example.commercebackoffice.domain.review.dto.RatingSummary;
 import com.example.commercebackoffice.domain.review.service.ReviewService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -87,5 +93,19 @@ public class DashboardService {
         return new WidgetsData(totalOrderPrice, todayOrderPrice, preparingOrder,
                 shippingOrder, deliveredOrder, lowStock, soldOutProduct
         );
+    }
+
+    // 차트데이터
+    public ChartsData chartsData() {
+        // 리뷰 평점 분포
+        RatingSummary ratingSummary = reviewService.ratingSummary();
+
+        // 고객 상태 분포
+        CustomerStateChart customerStateChart = customerService.customerStateChart();
+
+        // 상품 카테고리 분포
+        List<CategoryProductCount> categoryProductCounts = productService.categoryChart();
+
+        return new ChartsData(ratingSummary, customerStateChart, categoryProductCounts);
     }
 }
