@@ -4,6 +4,7 @@ import com.example.commercebackoffice.domain.admin.service.AdminService;
 import com.example.commercebackoffice.domain.customer.dto.CustomerStateChart;
 import com.example.commercebackoffice.domain.customer.service.CustomerService;
 import com.example.commercebackoffice.domain.dashboard.dto.ChartsData;
+import com.example.commercebackoffice.domain.dashboard.dto.LatestOrderList;
 import com.example.commercebackoffice.domain.dashboard.dto.SummaryStatistics;
 import com.example.commercebackoffice.domain.dashboard.dto.WidgetsData;
 import com.example.commercebackoffice.domain.order.service.OrderService;
@@ -107,5 +108,10 @@ public class DashboardService {
         List<CategoryProductCount> categoryProductCounts = productService.categoryChart();
 
         return new ChartsData(ratingSummary, customerStateChart, categoryProductCounts);
+    }
+
+    // 최근 주문 목록
+    public List<LatestOrderList> getLatestOrderList() {
+        return orderService.getLatestOrderList();
     }
 }

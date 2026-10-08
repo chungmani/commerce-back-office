@@ -6,6 +6,7 @@ import com.example.commercebackoffice.domain.admin.entity.Admin;
 import com.example.commercebackoffice.domain.admin.service.AdminService;
 import com.example.commercebackoffice.domain.customer.entity.Customer;
 import com.example.commercebackoffice.domain.customer.service.CustomerService;
+import com.example.commercebackoffice.domain.dashboard.dto.LatestOrderList;
 import com.example.commercebackoffice.domain.order.dto.*;
 import com.example.commercebackoffice.domain.order.entity.Order;
 import com.example.commercebackoffice.domain.order.enums.OrderState;
@@ -152,5 +153,15 @@ public class OrderService {
     // 배송완료 주문수
     public long deliveredOrder() {
         return orderRepository.deliveredOrder();
+    }
+
+    // 최근 주문 목록 10개 조회
+    public List<LatestOrderList> getLatestOrderList() {
+        Pageable pageable = PageRequest.ofSize(10);
+        List<Order> orders = orderRepository.findLatestOrder(pageable);
+
+        return orders.stream().map(
+                LatestOrderList::from
+        ).toList();
     }
 }

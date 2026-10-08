@@ -55,4 +55,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
     @Query("SELECT COUNT(o) FROM Order o WHERE o.state = OrderState.DELIVERED")
     long deliveredOrder();
+
+    @Query("SELECT o FROM Order o ORDER BY o.createdAt DESC")
+    List<Order> findLatestOrder(Pageable pageable);
 }
