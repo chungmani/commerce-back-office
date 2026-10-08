@@ -20,6 +20,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -113,4 +115,15 @@ public class OrderService {
         );
     }
 
+    // 전체 주문 수
+    public long countAll() {
+        return orderRepository.countAll();
+    }
+
+    // 오늘 주문 수
+    public long todayOrder() {
+        LocalDateTime start = LocalDate.now().atStartOfDay();
+        LocalDateTime end = start.plusDays(1);
+        return orderRepository.todayOrderCount(start, end);
+    }
 }

@@ -8,6 +8,9 @@ import com.example.commercebackoffice.domain.product.dto.*;
 import com.example.commercebackoffice.domain.product.entity.Product;
 import com.example.commercebackoffice.domain.product.enums.ProductState;
 import com.example.commercebackoffice.domain.product.repository.ProductRepository;
+import com.example.commercebackoffice.domain.review.dto.LatestReviewResponse;
+import com.example.commercebackoffice.domain.review.dto.ReviewSummaryResponse;
+import com.example.commercebackoffice.domain.review.service.ReviewService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -16,6 +19,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -23,6 +28,7 @@ public class ProductService {
 
     private final ProductRepository productRepository;
     private final AdminService adminService;
+    private final ReviewService reviewService;
 
     // 상품 등록
     @Transactional
@@ -51,10 +57,13 @@ public class ProductService {
         return products.map(GetProductsResponse::from);
     }
 
-    // 상품 상세 조회
+    // 상품 상세 조회 (리뷰 통계 + 최근 리뷰 3개)
     public GetProductResponse findOne(Long productId) {
         Product product = getProductById(productId);
-        return GetProductResponse.from(product);
+        ReviewSummaryResponse summaryResponse = reviewService.reviewSummaryResponse(productId);
+        List<LatestReviewResponse> latestReviewResponses = reviewService.latestReviewResponses(productId);
+
+        return GetProductResponse.from(product, summaryResponse, latestReviewResponses);
     }
 
     // 상품 정보 수정
@@ -116,5 +125,13 @@ public class ProductService {
         );
     }
 
+    // 상품 전체 수 조회
+    public long countAll() {
+        return productRepository.countAll();
+    }
 
+    // 재고 부족 상품 조회(5개 이하)
+    public long lowStockCount() {
+        return productRepository.lowStockCount();
+    }
 }

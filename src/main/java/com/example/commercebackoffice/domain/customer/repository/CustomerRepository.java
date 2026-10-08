@@ -24,4 +24,9 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
 
     boolean existsByEmail(String email);
 
+    @Query("SELECT COUNT(c) FROM Customer c")
+    long countAll();
+
+    @Query("SELECT COUNT(c) FROM Customer c WHERE c.state = CustomerState.ACTIVE")
+    long countActiveCustomer();
 }

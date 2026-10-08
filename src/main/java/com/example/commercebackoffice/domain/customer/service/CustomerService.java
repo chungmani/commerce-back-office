@@ -93,5 +93,13 @@ public class CustomerService {
         );
     }
 
+    // 전체 고객 수 조회
+    public long countAll() {
+        return customerRepository.countAll();
+    }
 
+    // 활성화 고객 수 조회
+    public long countActive() {
+        return customerRepository.countActiveCustomer();
+    }
 }
