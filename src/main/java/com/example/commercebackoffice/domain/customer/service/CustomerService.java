@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 public class CustomerService {
 
     private final CustomerRepository customerRepository;
-    private final OrderService orderService;
+    private final CustomerOrderSummaryService customerOrderSummaryService;
 
     // 고객 전체 조회
     public Page<GetCustomersResponse> findAll(String keyword, CustomerState state, Pageable pageable) {
@@ -37,7 +37,7 @@ public class CustomerService {
 
         Page<Customer> customers = customerRepository.findAllByKeywordAndFilter(keyword, state, pageable);
 
-        List<CustomerOrderSummary> summaries  = orderService.getSummary();
+        List<CustomerOrderSummary> summaries  = customerOrderSummaryService.getCustomerOrderSummary();
         Map<Long, CustomerOrderSummary> summaryMap = summaries.stream()
                 .collect(Collectors.toMap(
                         customerOrderSummary -> customerOrderSummary.customerId(),

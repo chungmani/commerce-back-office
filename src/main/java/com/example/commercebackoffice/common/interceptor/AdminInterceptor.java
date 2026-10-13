@@ -3,10 +3,8 @@ package com.example.commercebackoffice.common.interceptor;
 import com.example.commercebackoffice.common.exception.BusinessException;
 import com.example.commercebackoffice.common.global.ResponseCode;
 import com.example.commercebackoffice.domain.admin.enums.AdminRole;
-import com.example.commercebackoffice.domain.auth.dto.SessionAdmin;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Component;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -19,36 +17,35 @@ public class AdminInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 
-        // 1. 현재 요청의 HttpSession에서 loginAdmin을 꺼내서 존재하는지 확인한다.
-        HttpSession session = request.getSession(false);
-        if (session == null) {
+        Object value = request.getAttribute("adminRole");
+        AdminRole adminRole = null;
+
+        if (value instanceof AdminRole) {
+           adminRole = (AdminRole) value;
+        } else {
             throw new BusinessException(ResponseCode.UNAUTHORIZED);
         }
 
-        SessionAdmin sessionAdmin = (SessionAdmin) session.getAttribute("loginAdmin");
-
-        if (sessionAdmin == null) {
-            throw new BusinessException(ResponseCode.UNAUTHORIZED);
-        }
 
         // 2. 요청이 admins/me 인가?
-        if (antPathMatcher.match("/admins/me/**", request.getRequestURI())) {
+        if (antPathMatcher.match("/admins/me/**", request.getRequestURI())
+                || antPathMatcher.match("/dashboard/**", request.getRequestURI())) {
             return true;
         }
 
         // 2-1 product 접근 가능한 관리자
-        if (antPathMatcher.match("/products/**", request.getRequestURI()) && sessionAdmin.role() == AdminRole.OPERATION_ADMIN) {
+        if (antPathMatcher.match("/products/**", request.getRequestURI()) && adminRole == AdminRole.OPERATION_ADMIN) {
             return true;
         }
 
         // 2-2 order 접근 가능한 관리자
         if (antPathMatcher.match("/orders/**", request.getRequestURI())
-                && (sessionAdmin.role() == AdminRole.CS_ADMIN || sessionAdmin.role() == AdminRole.OPERATION_ADMIN)) {
+                && (adminRole == AdminRole.CS_ADMIN || adminRole == AdminRole.OPERATION_ADMIN)) {
             return true;
         }
 
         // 3. 슈퍼 관리자인가?
-        if (sessionAdmin.role() != AdminRole.SUPER_ADMIN) {
+        if (adminRole != AdminRole.SUPER_ADMIN) {
             throw new BusinessException(ResponseCode.FORBIDDEN_ADMIN);
         }
         return true;

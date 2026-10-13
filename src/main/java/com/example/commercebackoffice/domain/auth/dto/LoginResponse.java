@@ -4,12 +4,14 @@ import com.example.commercebackoffice.domain.admin.entity.Admin;
 
 public record LoginResponse(
         Long id,
-        String email
+        String email,
+        String token
 ) {
-    public static LoginResponse from(Admin admin) {
+    public static LoginResponse from(Admin admin, String token) {
         return new LoginResponse(
                 admin.getId(),
-                admin.getEmail()
+                admin.getEmail(),
+                token
         );
     }
 }

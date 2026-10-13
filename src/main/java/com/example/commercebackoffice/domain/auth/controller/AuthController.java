@@ -2,6 +2,7 @@ package com.example.commercebackoffice.domain.auth.controller;
 
 import com.example.commercebackoffice.common.global.ApiResponse;
 import com.example.commercebackoffice.common.global.ResponseCode;
+import com.example.commercebackoffice.common.utils.JwtUtil;
 import com.example.commercebackoffice.domain.admin.entity.Admin;
 import com.example.commercebackoffice.domain.admin.service.AdminService;
 import com.example.commercebackoffice.domain.auth.dto.LoginRequest;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private final AdminService adminService;
+    private final JwtUtil jwtUtil;
 
     // 로그인
     @PostMapping("/login")
@@ -27,7 +29,8 @@ public class AuthController {
     ) {
         Admin admin = adminService.login(request);
         session.setAttribute("loginAdmin", SessionAdmin.from(admin));
-        return ResponseEntity.ok(ApiResponse.success(ResponseCode.OK, LoginResponse.from(admin)));
+        String token = jwtUtil.generateToken(request.email(), admin.getId(), admin.getRole());
+        return ResponseEntity.ok(ApiResponse.success(ResponseCode.OK, LoginResponse.from(admin, token)));
     }
 
     // 로그아웃

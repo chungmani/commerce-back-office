@@ -27,3 +27,7 @@ server:
 
         # HTTPS에서만 쿠키 전송 → 실제 배포시 true
         secure: false
+
+jwt:
+  secret:
+    key : cX7mK9vR2pL5wN8aT4yH1dF6sB3jG0uZqE9iV5oA2kM=
