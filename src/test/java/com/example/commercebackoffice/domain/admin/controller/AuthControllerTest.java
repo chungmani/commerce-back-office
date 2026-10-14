@@ -1,6 +1,5 @@
 package com.example.commercebackoffice.domain.admin.controller;
 
-import com.example.commercebackoffice.domain.auth.dto.SessionAdmin;
 import com.example.commercebackoffice.domain.admin.entity.Admin;
 import com.example.commercebackoffice.domain.admin.enums.AdminRole;
 import com.example.commercebackoffice.domain.auth.controller.AuthController;
@@ -28,10 +27,9 @@ class AuthControllerTest {
         MockHttpSession session = new MockHttpSession();
         Admin admin = new Admin("채원", "test@test.com",
                 "Rlacodnjs12#", "010-0000-0000", AdminRole.CS_ADMIN);
-        session.setAttribute("loginAdmin", SessionAdmin.from(admin));
 
         // when
-        ResponseEntity<Void> response = authController.logout(new SessionAdmin(1L, "test@test.com", AdminRole.CS_ADMIN), session);
+        ResponseEntity<Void> response = authController.logout();
 
         // then
         assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
@@ -45,7 +43,7 @@ class AuthControllerTest {
         MockHttpSession session = new MockHttpSession();
 
         // when
-        ResponseEntity<Void> response = authController.logout(null, session);
+        ResponseEntity<Void> response = authController.logout();
 
         // then
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());

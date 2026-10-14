@@ -1,5 +1,6 @@
 package com.example.commercebackoffice.common.filter;
 
+import com.example.commercebackoffice.common.security.AdminPrincipal;
 import com.example.commercebackoffice.common.utils.JwtUtil;
 import com.example.commercebackoffice.domain.admin.enums.AdminRole;
 import jakarta.servlet.FilterChain;
@@ -7,11 +8,15 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -28,7 +33,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
         if (requestURL.equals("/auth/login") || requestURL.equals("/admins/signup")
                 || antPathMatcher.match("/swagger-ui/**", requestURL) ||
-                antPathMatcher.match("/v3/api-docs/**", requestURL)
+                antPathMatcher.match("/v3/api-docs/**", requestURL) || antPathMatcher.match("/swagger-ui.html/**", requestURL)
         ) {
             filterChain.doFilter(request, response);
             return;
@@ -57,9 +62,19 @@ public class JwtFilter extends OncePerRequestFilter {
         String adminEmail = jwtUtil.extractEmail(jwt);
         Long adminId = jwtUtil.extractId(jwt);
         AdminRole adminRole = jwtUtil.extractRole(jwt);
-        request.setAttribute("adminEmail", adminEmail);
-        request.setAttribute("adminId", adminId);
-        request.setAttribute("adminRole", adminRole);
+
+        // 인증 사용자 정보 생성 커스텀
+        AdminPrincipal principal = new AdminPrincipal(adminId, adminEmail, adminRole);
+
+        // Spring Security가 이해할 수 있는 권한 객체 생성
+        var authorities = List.of(new SimpleGrantedAuthority(adminRole.getRole()));
+
+        // 인증 객체 생성
+        UsernamePasswordAuthenticationToken authentication =
+                new UsernamePasswordAuthenticationToken(principal, null, authorities);
+
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
         filterChain.doFilter(request, response);
     }
 

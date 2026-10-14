@@ -2,20 +2,20 @@ package com.example.commercebackoffice.domain.admin.controller;
 
 import com.example.commercebackoffice.common.global.ApiResponse;
 import com.example.commercebackoffice.common.global.ResponseCode;
+import com.example.commercebackoffice.common.security.AdminPrincipal;
 import com.example.commercebackoffice.domain.admin.dto.*;
 import com.example.commercebackoffice.domain.admin.enums.AdminRole;
 import com.example.commercebackoffice.domain.admin.enums.AdminState;
 import com.example.commercebackoffice.domain.admin.service.AdminService;
 import com.example.commercebackoffice.domain.admin.dto.GetAdminsResponse;
-import com.example.commercebackoffice.domain.auth.dto.SessionAdmin;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.Response;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -98,29 +98,29 @@ public class AdminController {
     // 내 프로필 조회
     @GetMapping("/me")
     public ResponseEntity<ApiResponse<GetProfileResponse>> getProfile(
-            @SessionAttribute(name = "loginAdmin") SessionAdmin sessionAdmin
-    ) {
-        Long adminId = sessionAdmin.id();
+            @AuthenticationPrincipal AdminPrincipal principal
+            ) {
+        Long adminId = principal.adminId();
         return ResponseEntity.ok(ApiResponse.success(ResponseCode.OK, adminService.getProfile(adminId)));
     }
 
     // 내 프로필 수정
     @PatchMapping("/me")
     public ResponseEntity<ApiResponse<UpdateProfileResponse>> updateProfile(
-            @SessionAttribute(name = "loginAdmin") SessionAdmin sessionAdmin,
+            @AuthenticationPrincipal AdminPrincipal principal,
             @Valid @RequestBody UpdateProfileRequest request
     ) {
-        Long adminId = sessionAdmin.id();
+        Long adminId = principal.adminId();
         return ResponseEntity.ok(ApiResponse.success(ResponseCode.OK, adminService.updateProfile(adminId, request)));
     }
 
     // 비밀번호 변경
     @PatchMapping("/me/pw")
     public ResponseEntity<Void> updatePw(
-            @SessionAttribute(name = "loginAdmin") SessionAdmin sessionAdmin,
+            @AuthenticationPrincipal AdminPrincipal principal,
             @Valid @RequestBody UpdatePwRequest request
     ) {
-        Long adminId = sessionAdmin.id();
+        Long adminId = principal.adminId();
         adminService.updatePw(adminId, request);
         return ResponseEntity.noContent().build();
     }
